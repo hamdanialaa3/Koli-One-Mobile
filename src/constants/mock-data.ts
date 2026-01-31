@@ -1,0 +1,85 @@
+// src/constants/mock-data.ts
+import { CarListing } from "../types/CarListing";
+
+export const MOCK_CARS: Partial<CarListing>[] = [
+    {
+        id: '1',
+        make: 'BMW',
+        model: 'X5',
+        year: 2023,
+        price: 125000,
+        currency: 'EUR',
+        mileage: 15000,
+        fuelType: 'Diesel',
+        transmission: 'Automatic',
+        city: 'Sofia',
+        region: 'Sofia-City',
+        images: ['https://images.unsplash.com/photo-1555215695-3004980adade?w=800&q=80'],
+        sellerType: 'dealer',
+        sellerName: 'Bavaria Auto'
+    },
+    {
+        id: '2',
+        make: 'Mercedes-Benz',
+        model: 'E-Class',
+        year: 2021,
+        price: 45900,
+        currency: 'EUR',
+        mileage: 62000,
+        fuelType: 'Diesel',
+        transmission: 'Automatic',
+        city: 'Plovdiv',
+        region: 'Plovdiv',
+        images: ['https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&q=80'],
+        sellerType: 'private',
+        sellerName: 'Ivan Petrov'
+    },
+    {
+        id: '3',
+        make: 'Audi',
+        model: 'RS6 Avant',
+        year: 2024,
+        price: 180000,
+        currency: 'EUR',
+        mileage: 1200,
+        fuelType: 'Petrol',
+        transmission: 'Automatic',
+        city: 'Varna',
+        region: 'Varna',
+        images: ['https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=800&q=80'],
+        sellerType: 'dealer',
+        sellerName: 'Premium Cars Varna'
+    },
+    {
+        id: '4',
+        make: 'Volkswagen',
+        model: 'Golf 8',
+        year: 2020,
+        price: 18500,
+        currency: 'EUR',
+        mileage: 85000,
+        fuelType: 'Petrol',
+        transmission: 'Manual',
+        city: 'Burgas',
+        region: 'Burgas',
+        images: ['https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=800&q=80'],
+        sellerType: 'private',
+        sellerName: 'Dimitar Georgiev'
+    },
+    {
+        id: '5',
+        make: 'Toyota',
+        model: 'RAV4',
+        year: 2022,
+        price: 32000,
+        currency: 'EUR',
+        mileage: 41000,
+        fuelType: 'Hybrid',
+        transmission: 'Automatic',
+        city: 'Sofia',
+        region: 'Sofia-City',
+        images: ['https://images.unsplash.com/photo-1621007947382-bb3c3968e3bb?w=800&q=80'],
+        sellerType: 'dealer',
+        sellerName: 'Toyota West'
+    }
+];

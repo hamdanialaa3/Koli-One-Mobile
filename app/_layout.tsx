@@ -7,6 +7,10 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
+import { ThemeProvider as StyledThemeProvider } from 'styled-components/native';
+import { theme } from '../src/styles/theme';
+import { AuthProvider, useAuth } from '../src/contexts/AuthContext';
+import { useNotifications } from '../src/hooks/useNotifications';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -47,13 +51,22 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+  const { user } = useAuth();
+
+  // Register push notifications
+  useNotifications(user?.uid);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
+      <StyledThemeProvider theme={theme}>
+        <AuthProvider>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="car/[id]" options={{ presentation: 'card' }} />
+          </Stack>
+        </AuthProvider>
+      </StyledThemeProvider>
     </ThemeProvider>
   );
 }
