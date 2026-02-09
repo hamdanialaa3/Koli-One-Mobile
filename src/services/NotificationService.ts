@@ -2,6 +2,9 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import * as Device from 'expo-device';
 import Constants from 'expo-constants';
+import { logger } from './logger-service';
+import { auth, db } from './firebase';
+import { doc, updateDoc } from 'firebase/firestore';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -16,6 +19,7 @@ Notifications.setNotificationHandler({
 export class NotificationService {
     /**
      * Register for push notifications and return the token
+     * Also stores the token in user's Firestore document for Cloud Functions
      */
     static async registerForPushNotificationsAsync(): Promise<string | undefined> {
         let token;
@@ -32,7 +36,7 @@ export class NotificationService {
             }
 
             if (finalStatus !== 'granted') {
-                console.warn('Failed to get push token for push notification!');
+                logger.warn('Failed to get push token for push notification');
                 return;
             }
 
@@ -43,9 +47,24 @@ export class NotificationService {
                 projectId
             })).data;
 
-            console.log('Push Token:', token);
+            logger.info('Push Token', { token });
+
+            // Store token in Firestore for Cloud Functions access
+            const currentUser = auth.currentUser;
+            if (currentUser && token) {
+                try {
+                    const userRef = doc(db, 'users', currentUser.uid);
+                    await updateDoc(userRef, {
+                        expoPushToken: token,
+                        lastTokenUpdate: new Date().toISOString()
+                    });
+                    logger.info('Expo push token saved to Firestore');
+                } catch (error) {
+                    logger.error('Error saving token to Firestore', error);
+                }
+            }
         } else {
-            console.warn('Must use physical device for Push Notifications');
+            logger.warn('Must use physical device for Push Notifications');
         }
 
         if (Platform.OS === 'android') {
@@ -54,6 +73,17 @@ export class NotificationService {
                 importance: Notifications.AndroidImportance.MAX,
                 vibrationPattern: [0, 250, 250, 250],
                 lightColor: '#FF231F7C',
+            });
+
+            // Create price-alerts channel for TASK-07
+            Notifications.setNotificationChannelAsync('price-alerts', {
+                name: 'Price Alerts',
+                importance: Notifications.AndroidImportance.HIGH,
+                vibrationPattern: [0, 500, 250, 500],
+                lightColor: '#00FF00',
+                sound: 'default',
+                enableVibrate: true,
+                showBadge: true
             });
         }
 

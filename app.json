@@ -11,20 +11,42 @@
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#FF7900"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.hamdani.kolione"
+      "bundleIdentifier": "com.hamdani.kolione",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "infoPlist": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.973379297533-auto"
+            ]
+          }
+        ],
+        "LSApplicationQueriesSchemes": [
+          "googlechrome",
+          "comgooglegemail"
+        ],
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.hamdani.kolione",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#FF7900"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -33,16 +55,47 @@
     },
     "plugins": [
       "expo-router",
-      "@react-native-google-signin/google-signin",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.973379297533-auto"
+        }
+      ],
       [
         "expo-camera",
         {
           "cameraPermission": "Allow Koli One to access your camera to scan cars for AI analysis."
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "minSdkVersion": 24,
+            "buildToolsVersion": "35.0.0"
+          },
+          "ios": {
+            "deploymentTarget": "15.1"
+          }
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a2efe325-74d5-4772-a200-0d44d16b484e"
+      },
+      "firebaseProjectId": "fire-new-globul",
+      "firebaseApiKey": "***REMOVED_FIREBASE_KEY***",
+      "algoliaAppId": "YOUR_ALGOLIA_APP_ID",
+      "algoliaSearchApiKey": "YOUR_ALGOLIA_SEARCH_API_KEY",
+      "algoliaIndexName": "cars",
+      "router": {}
+    },
+    "owner": "hamdanialaa"
   }
 }

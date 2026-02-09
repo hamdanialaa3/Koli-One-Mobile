@@ -99,6 +99,19 @@ const TechnicalSpecsStep: React.FC<TechnicalSpecsStepProps> = ({ data, onUpdate 
                 />
             </InputGroup>
 
+            {/* TASK-12: VIN Input */}
+            <InputGroup>
+                <Label theme={theme}>VIN (Optional)</Label>
+                <StyledInput
+                    theme={theme}
+                    placeholder="17-character VIN"
+                    autoCapitalize="characters"
+                    maxLength={17}
+                    value={data.vin}
+                    onChangeText={text => onUpdate({ vin: text.toUpperCase().replace(/\s/g, '') })}
+                />
+            </InputGroup>
+
             <InputGroup>
                 <Label theme={theme}>Power (HP)</Label>
                 <StyledInput

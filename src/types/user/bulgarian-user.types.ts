@@ -131,3 +131,53 @@ export interface ProfilePermissions {
     canUseAPI: boolean;
     themeMode: 'standard' | 'dealer-led' | 'company-led';
 }
+
+// ==================== TYPE GUARDS ====================
+/**
+ * Type guard to check if a user is a dealer
+ */
+export function isDealerProfile(user: BulgarianUser): user is DealerProfile {
+    return user.profileType === 'dealer';
+}
+
+/**
+ * Type guard to check if a user is a company
+ */
+export function isCompanyProfile(user: BulgarianUser): user is CompanyProfile {
+    return user.profileType === 'company';
+}
+
+/**
+ * Type guard to check if a user is a private user
+ */
+export function isPrivateProfile(user: BulgarianUser): user is PrivateProfile {
+    return user.profileType === 'private';
+}
+
+/**
+ * Type guard to check if a user is a business (dealer or company)
+ */
+export function isBusinessProfile(user: BulgarianUser): user is DealerProfile | CompanyProfile {
+    return user.profileType === 'dealer' || user.profileType === 'company';
+}
+
+// ==================== HELPER TYPES ====================
+export type ProfileType = BulgarianUser['profileType'];
+export type ProfileStatus = 'pending' | 'verified' | 'rejected';
+export type BillingInterval = 'monthly' | 'annual';
+
+/**
+ * Partial update type for user profiles
+ */
+export type BulgarianUserUpdate = Partial<Omit<BulgarianUser, 'uid' | 'createdAt'>>;
+
+/**
+ * Creation data for new users
+ */
+export type BulgarianUserCreateData = Omit<
+    BulgarianUser,
+    'uid' | 'createdAt' | 'updatedAt' | 'stats' | 'verification'
+> & {
+    stats?: Partial<BaseProfile['stats']>;
+    verification?: Partial<BaseProfile['verification']>;
+};

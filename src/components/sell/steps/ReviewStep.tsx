@@ -95,6 +95,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data }) => {
             <Section theme={theme}>
                 <SectionTitle theme={theme}>Technicals</SectionTitle>
                 <InfoRow><InfoLabel theme={theme}>Mileage</InfoLabel><InfoValue theme={theme}>{data.mileage} km</InfoValue></InfoRow>
+                {data.vin && <InfoRow><InfoLabel theme={theme}>VIN</InfoLabel><InfoValue theme={theme}>{data.vin}</InfoValue></InfoRow>}
                 <InfoRow><InfoLabel theme={theme}>Transmission</InfoLabel><InfoValue theme={theme}>{data.transmission}</InfoValue></InfoRow>
                 <InfoRow><InfoLabel theme={theme}>Fuel</InfoLabel><InfoValue theme={theme}>{data.fuelType}</InfoValue></InfoRow>
             </Section>

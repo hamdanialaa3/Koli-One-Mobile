@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
-import { FlatList, View, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
+import { FlatList, View, TouchableOpacity, Dimensions, ActivityIndicator, Alert, TextInput, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../src/styles/theme';
 import { CarCard } from '../../src/components/CarCard';
-import { MobileHeader } from '../../src/components/common/MobileHeader';
+import MobileHeader from '../../src/components/common/MobileHeader';
 import { useMobileSearch } from '../../src/hooks/useMobileSearch';
 import { SkeletonListingCard } from '../../src/components/skeleton/SkeletonListingCard';
 import { AnalyticsService } from '../../src/services/AnalyticsService';
@@ -15,6 +15,10 @@ import { RefreshControl } from 'react-native';
 import { SearchFiltersModal } from '../../src/components/search/SearchFiltersModal';
 import { SortModal, SortType, SORT_OPTIONS } from '../../src/components/search/SortModal';
 import { FilterState } from '../../src/services/search/UnifiedFilterTypes';
+import { SavedSearchesService } from '../../src/services/SavedSearchesService';
+import { useAuth } from '../../src/contexts/AuthContext';
+import { useRouter } from 'expo-router';
+import { logger } from '../../src/services/logger-service';
 
 const { width } = Dimensions.get('window');
 
@@ -106,6 +110,60 @@ const SortText = styled.Text`
   font-weight: 600;
 `;
 
+const ModalBackdrop = styled.View`
+  flex: 1;
+  background-color: rgba(0, 0, 0, 0.55);
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+`;
+
+const ModalCard = styled.View`
+  width: 100%;
+  max-width: 360px;
+  background-color: ${props => props.theme.colors.background.paper};
+  border-radius: 16px;
+  padding: 20px;
+`;
+
+const ModalTitle = styled.Text`
+  font-size: 16px;
+  font-weight: 700;
+  color: ${props => props.theme.colors.text.primary};
+  margin-bottom: 12px;
+`;
+
+const ModalInput = styled.TextInput`
+  height: 48px;
+  border-radius: 12px;
+  padding: 0 12px;
+  border-width: 1px;
+  border-color: ${props => props.theme.colors.border.muted};
+  color: ${props => props.theme.colors.text.primary};
+  background-color: ${props => props.theme.colors.background.default};
+`;
+
+const ModalActions = styled.View`
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+`;
+
+const ModalButton = styled.TouchableOpacity<{ primary?: boolean }>`
+  padding: 10px 16px;
+  border-radius: 10px;
+  background-color: ${props => props.primary ? props.theme.colors.primary.main : props.theme.colors.background.default};
+  border-width: 1px;
+  border-color: ${props => props.primary ? props.theme.colors.primary.main : props.theme.colors.border.muted};
+`;
+
+const ModalButtonText = styled.Text<{ primary?: boolean }>`
+  font-size: 14px;
+  font-weight: 600;
+  color: ${props => props.primary ? '#fff' : props.theme.colors.text.primary};
+`;
+
 // Categories mapping to ID
 const CATEGORY_MAP: Record<string, string> = {
   'All': '',
@@ -118,6 +176,8 @@ const CATEGORY_MAP: Record<string, string> = {
 };
 
 export default function SearchScreen() {
+  const router = useRouter();
+  const { user } = useAuth();
   const {
     filters,
     results,
@@ -131,6 +191,8 @@ export default function SearchScreen() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSortModalOpen, setIsSortModalOpen] = useState(false);
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [saveSearchName, setSaveSearchName] = useState('');
 
   // Trigger search when filters change (debounced could be better but explicit for now or effect)
   // For this UI, let's trigger search on mount and when filters update
@@ -154,11 +216,80 @@ export default function SearchScreen() {
     search();
   };
 
+  const handleSaveSearch = () => {
+    if (!user) {
+      Alert.alert('Влезте в профила', 'Трябва да влезете, за да запазите търсене');
+      return;
+    }
+
+    // Check if filters are meaningful
+    const hasFilters = filters.make || filters.model || filters.bodyType || 
+               filters.yearMin || filters.yearMax || filters.priceMax || filters.mileageMax;
+    
+    if (!hasFilters) {
+      Alert.alert('Няма филтри', 'Моля, приложете някои филтри преди запазване на търсенето');
+      return;
+    }
+
+    setSaveSearchName('');
+    setIsSaveModalOpen(true);
+  };
+
+  const handleConfirmSaveSearch = async () => {
+    if (!saveSearchName.trim()) {
+      Alert.alert('Грешка', 'Името не може да бъде празно');
+      return;
+    }
+
+    try {
+      await SavedSearchesService.createSavedSearch({
+        searchName: saveSearchName.trim(),
+        make: filters.make,
+        model: filters.model,
+        yearMin: filters.yearMin,
+        yearMax: filters.yearMax,
+        priceMax: filters.priceMax,
+        mileageMax: filters.mileageMax,
+        bodyTypes: filters.bodyType ? [filters.bodyType] : undefined,
+        fuelTypes: filters.fuelType ? [filters.fuelType] : undefined,
+        transmissions: filters.transmission ? [filters.transmission] : undefined,
+        regions: filters.location ? [filters.location] : undefined,
+        isActive: true,
+        notificationsEnabled: true
+      });
+
+      setIsSaveModalOpen(false);
+
+      Alert.alert(
+        'Успешно!',
+        'Търсенето е запазено. Ще получавате известия при спад на цената.',
+        [
+          { text: 'OK' },
+          { 
+            text: 'Преглед', 
+            onPress: () => router.push('/saved-searches')
+          }
+        ]
+      );
+    } catch (error) {
+      logger.error('Error saving search', error);
+      Alert.alert('Грешка', 'Неуспешно запазване на търсенето');
+    }
+  };
+
   const activeLabel = Object.keys(CATEGORY_MAP).find(key => CATEGORY_MAP[key] === (filters.bodyType || '')) || 'All';
 
   return (
     <Container theme={theme}>
-      <MobileHeader title="Search" showLogo={false} />
+      <MobileHeader 
+        title="Search" 
+        showLogo={false}
+        rightComponent={
+          <TouchableOpacity onPress={() => router.push('/saved-searches')} style={{ marginRight: 8 }}>
+            <Ionicons name="bookmark-outline" size={24} color={theme.colors.primary.main} />
+          </TouchableOpacity>
+        }
+      />
       <Header theme={theme}>
         <SearchBarContainer>
           <SearchInputContainer theme={theme}>
@@ -177,6 +308,9 @@ export default function SearchScreen() {
           </SearchInputContainer>
           <FilterButton theme={theme} onPress={() => setIsModalOpen(true)}>
             <Ionicons name="options-outline" size={24} color="#fff" />
+          </FilterButton>
+          <FilterButton theme={theme} onPress={handleSaveSearch}>
+            <Ionicons name="bookmark" size={24} color="#fff" />
           </FilterButton>
         </SearchBarContainer>
 
@@ -264,6 +398,35 @@ export default function SearchScreen() {
           }
         />
       )}
+
+      <Modal
+        transparent
+        visible={isSaveModalOpen}
+        animationType="fade"
+        onRequestClose={() => setIsSaveModalOpen(false)}
+      >
+        <ModalBackdrop>
+          <ModalCard theme={theme}>
+            <ModalTitle theme={theme}>Запазване на търсене</ModalTitle>
+            <ModalInput
+              theme={theme}
+              placeholder="Име на търсенето"
+              placeholderTextColor={theme.colors.text.disabled}
+              value={saveSearchName}
+              onChangeText={setSaveSearchName}
+              autoFocus
+            />
+            <ModalActions>
+              <ModalButton theme={theme} onPress={() => setIsSaveModalOpen(false)}>
+                <ModalButtonText theme={theme}>Отказ</ModalButtonText>
+              </ModalButton>
+              <ModalButton theme={theme} primary onPress={handleConfirmSaveSearch}>
+                <ModalButtonText theme={theme} primary>Запази</ModalButtonText>
+              </ModalButton>
+            </ModalActions>
+          </ModalCard>
+        </ModalBackdrop>
+      </Modal>
     </Container>
   );
 }

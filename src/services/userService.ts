@@ -1,7 +1,13 @@
 // src/services/userService.ts
 import { doc, getDoc, setDoc, runTransaction, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { logger } from './logger-service';
+import { db } from './firebase';
+import { BulgarianUser, BaseProfile } from '../types/user/bulgarian-user.types';
+import { User } from 'firebase/auth';
 
-// ... (other imports)
+const USERS_COLLECTION = 'users';
+const COUNTERS_COLLECTION = 'counters';
+const USER_COUNTER_DOC = 'users';
 
 export const updatePushToken = async (uid: string, token: string): Promise<void> => {
     try {
@@ -11,16 +17,9 @@ export const updatePushToken = async (uid: string, token: string): Promise<void>
             updatedAt: serverTimestamp()
         });
     } catch (error) {
-        console.error('Error updating push token:', error);
+        logger.error('Error updating push token', error);
     }
 };
-import { db } from './firebase';
-import { BulgarianUser, BaseProfile } from '../types/user/bulgarian-user.types';
-import { User } from 'firebase/auth';
-
-const USERS_COLLECTION = 'users';
-const COUNTERS_COLLECTION = 'counters';
-const USER_COUNTER_DOC = 'users';
 
 export const getUserProfile = async (uid: string): Promise<BulgarianUser | null> => {
     try {
@@ -30,7 +29,7 @@ export const getUserProfile = async (uid: string): Promise<BulgarianUser | null>
         }
         return null;
     } catch (error) {
-        console.error('Error fetching user profile:', error);
+        logger.error('Error fetching user profile', error);
         return null;
     }
 };
@@ -59,7 +58,7 @@ export const createUserProfile = async (authUser: User): Promise<BulgarianUser |
                 }
             });
         } catch (e) {
-            console.error("Transaction failed: ", e);
+            logger.error('Transaction failed', e);
             // Fallback or retry logic could go here
             // For basic safety, we might standardly fail or use a random large number (not ideal for constitution)
             numericId = Math.floor(Date.now() / 1000);
@@ -127,7 +126,19 @@ export const createUserProfile = async (authUser: User): Promise<BulgarianUser |
         return userDoc;
 
     } catch (error) {
-        console.error('Error creating user profile:', error);
+        logger.error('Error creating user profile', error);
         return null;
+    }
+};
+export const updateUserProfile = async (uid: string, data: any): Promise<void> => {
+    try {
+        const userRef = doc(db, USERS_COLLECTION, uid);
+        await updateDoc(userRef, {
+            ...data,
+            updatedAt: serverTimestamp()
+        });
+    } catch (error) {
+        logger.error('Error updating profile', error);
+        throw error;
     }
 };

@@ -68,6 +68,10 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="messages"
+        options={{ href: null }}
+      />
     </Tabs>
   );
 }

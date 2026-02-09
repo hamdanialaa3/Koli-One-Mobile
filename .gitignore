@@ -39,3 +39,8 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# 🔐 Security Vault
+mobile_docs/VAULT_SECURE_STORAGE.md
+mobile_docs/GOOGLE_PLAY_CONSOLE_METADATA.md
+

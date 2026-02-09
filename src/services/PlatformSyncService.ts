@@ -16,6 +16,7 @@ import {
 } from 'firebase/firestore';
 import { BulgarianUser } from '../types/user/bulgarian-user.types';
 import { CarListing } from '../types/CarListing';
+import { logger } from './logger-service';
 
 export interface AppNotification {
     id: string;
@@ -134,7 +135,7 @@ export class PlatformSyncService {
             const recent = history.slice(0, 10);
             await AsyncStorage.setItem('browsing_history', JSON.stringify(recent));
         } catch (e) {
-            console.error("Failed to update history", e);
+            logger.error('Failed to update history', e);
         }
     }
 
@@ -170,7 +171,7 @@ export class PlatformSyncService {
                 views: increment(1)
             });
         } catch (e) {
-            console.warn("View tracking failed (might be legacy doc structure)");
+            logger.warn('View tracking failed (might be legacy doc structure)');
         }
     }
 }

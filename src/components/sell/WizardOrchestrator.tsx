@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/native';
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { theme } from '../../styles/theme';
 import { MobileHeader } from '../common/MobileHeader';
 import { VehicleFormData } from '../../types/sellTypes';
 import { SellService } from '../../services/SellService';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useSellStore } from '../../store/useSellStore';
 
 // Steps
 import BasicInfoStep from './steps/BasicInfoStep';
@@ -75,52 +76,99 @@ const BackButtonText = styled.Text`
 
 const WizardOrchestrator: React.FC = () => {
     const router = useRouter();
-    const [currentStep, setCurrentStep] = useState(1);
+    const params = useLocalSearchParams();
+
+    const {
+        step,
+        setStep,
+        form,
+        setFormData,
+        resetForm,
+        images
+    } = useSellStore();
+
     const [isPublishing, setIsPublishing] = useState(false);
-    const [formData, setFormData] = useState<Partial<VehicleFormData>>({
-        vehicleType: 'car',
-        images: [],
-        equipment: { safety: [], comfort: [], infotainment: [], extras: [] }
-    });
+
+    // TASK-14: Initialize with AI-extracted data if available
+    useEffect(() => {
+        // Only hydrate if we are at step 1 and have params and empty form
+        if (step === 1 && Object.keys(params).length > 0 && !form.make) {
+            const baseData: Partial<VehicleFormData> = {
+                vehicleType: 'car',
+                equipment: form.equipment || { safety: [], comfort: [], infotainment: [], extras: [] }
+            };
+
+            // Pre-fill from Smart Sell AI analysis
+            if (params.make) baseData.make = params.make as string;
+            if (params.model) baseData.model = params.model as string;
+            if (params.year) baseData.year = params.year as string;
+            if (params.condition) baseData.condition = params.condition as string;
+            if (params.color) baseData.color = params.color as string;
+
+            setFormData(baseData);
+        }
+    }, [params, step, form.make, setFormData]);
 
     const totalSteps = 7;
 
-    const handleUpdate = (updates: Partial<VehicleFormData>) => {
-        setFormData(prev => ({ ...prev, ...updates }));
-    };
-
     const handleNext = async () => {
-        if (currentStep < totalSteps) {
-            setCurrentStep(prev => prev + 1);
+        if (step < totalSteps) {
+            setStep(step + 1);
         } else {
             handlePublish();
         }
     };
 
     const handleBack = () => {
-        if (currentStep > 1) {
-            setCurrentStep(prev => prev - 1);
+        if (step > 1) {
+            setStep(step - 1);
         } else {
-            router.back();
+            Alert.alert(
+                "Cancel Listing?",
+                "Are you sure you want to cancel? Your draft will be saved.",
+                [
+                    { text: "Keep Editing", style: "cancel" },
+                    { text: "Exit", style: "destructive", onPress: () => router.back() }
+                ]
+            );
         }
     };
 
     const handlePublish = async () => {
         setIsPublishing(true);
         try {
-            // 1. Upload images
-            const uploadedUrls = await SellService.uploadImages(formData.images || []);
+            // Check for pending uploads
+            const pendingImages = images.filter(img => img.status === 'uploading' || img.status === 'idle');
+            if (pendingImages.length > 0) {
+                Alert.alert("Pending Uploads", "Some images are still uploading. Please wait a moment.");
+                setIsPublishing(false);
+                return;
+            }
 
-            // 2. Submit listing
+            const failedImages = images.filter(img => img.status === 'error');
+            if (failedImages.length > 0) {
+                Alert.alert("Upload Failed", "Some images failed to upload. Please retry or remove them.");
+                setIsPublishing(false);
+                return;
+            }
+
+            // Collect uploaded URLs
+            const validImages = images.filter(img => img.status === 'done' || img.uri.startsWith('http')).map(img => img.uri);
+
             await SellService.submitListing({
-                ...formData,
-                images: uploadedUrls
+                ...form,
+                images: validImages
             });
 
             Alert.alert(
                 "Success! 🎉",
                 "Your vehicle has been listed and is now live on Koli One.",
-                [{ text: "Great", onPress: () => router.push('/(tabs)') }]
+                [{
+                    text: "Great", onPress: () => {
+                        resetForm();
+                        router.push('/(tabs)');
+                    }
+                }]
             );
         } catch (error) {
             Alert.alert("Error", "Something went wrong while publishing your ad. Please try again.");
@@ -131,20 +179,23 @@ const WizardOrchestrator: React.FC = () => {
     };
 
     const renderStep = () => {
-        switch (currentStep) {
-            case 1: return <BasicInfoStep data={formData} onUpdate={handleUpdate} />;
-            case 2: return <TechnicalSpecsStep data={formData} onUpdate={handleUpdate} />;
-            case 3: return <EquipmentStep data={formData} onUpdate={handleUpdate} />;
-            case 4: return <PhotosStep data={formData} onUpdate={handleUpdate} />;
-            case 5: return <PricingContactStep data={formData} onUpdate={handleUpdate} />;
-            case 6: return <AIDescriptionStep data={formData} onUpdate={handleUpdate} />;
-            case 7: return <ReviewStep data={formData} />;
+        // Steps now consume store directly or via props
+        const stepProps = { data: form, onUpdate: setFormData };
+
+        switch (step) {
+            case 1: return <BasicInfoStep {...stepProps} />;
+            case 2: return <TechnicalSpecsStep {...stepProps} />;
+            case 3: return <EquipmentStep {...stepProps} />;
+            case 4: return <PhotosStep />; // Consumes store internally
+            case 5: return <PricingContactStep {...stepProps} />;
+            case 6: return <AIDescriptionStep {...stepProps} />;
+            case 7: return <ReviewStep data={{ ...form, images: images.map(i => i.uri) }} />; // Pass images for review
             default: return null;
         }
     };
 
     const getStepTitle = () => {
-        switch (currentStep) {
+        switch (step) {
             case 1: return "Basic Info";
             case 2: return "Technical Specs";
             case 3: return "Equipment";
@@ -164,7 +215,7 @@ const WizardOrchestrator: React.FC = () => {
             />
 
             <ProgressContainer theme={theme}>
-                <ProgressBar progress={currentStep / totalSteps} theme={theme} />
+                <ProgressBar progress={step / totalSteps} theme={theme} />
             </ProgressContainer>
 
             <Content>
@@ -173,7 +224,7 @@ const WizardOrchestrator: React.FC = () => {
 
             <Footer theme={theme}>
                 <BackButton onPress={handleBack}>
-                    <BackButtonText theme={theme}>{currentStep === 1 ? 'Cancel' : 'Back'}</BackButtonText>
+                    <BackButtonText theme={theme}>{step === 1 ? 'Cancel' : 'Back'}</BackButtonText>
                 </BackButton>
 
                 <NextButton theme={theme} onPress={handleNext} disabled={isPublishing}>
@@ -182,7 +233,7 @@ const WizardOrchestrator: React.FC = () => {
                     ) : (
                         <>
                             <NextButtonText theme={theme}>
-                                {currentStep === totalSteps ? 'Publish' : 'Next'}
+                                {step === totalSteps ? 'Publish' : 'Next'}
                             </NextButtonText>
                             <Ionicons name="arrow-forward" size={20} color="#fff" />
                         </>

@@ -17,6 +17,8 @@ import { MessagingService, RealtimeMessage } from '../../src/services/MessagingS
 import { useAuth } from '../../src/contexts/AuthContext';
 import { ListingService } from '../../src/services/ListingService';
 import { CarListing } from '../../src/types/CarListing';
+import { QuickReplies } from '../../src/components/messaging/QuickReplies';
+import { OfferBubble } from '../../src/components/messaging/OfferBubble';
 
 const Container = styled.SafeAreaView`
   flex: 1;
@@ -109,6 +111,8 @@ export default function ChatScreen() {
     const [inputText, setInputText] = useState('');
     const [car, setCar] = useState<CarListing | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isOfferMode, setIsOfferMode] = useState(false);
+    const [offerAmount, setOfferAmount] = useState('');
     const flatListRef = useRef<FlatList>(null);
 
     useEffect(() => {
@@ -154,6 +158,11 @@ export default function ChatScreen() {
     };
 
     const handleSend = async () => {
+        if (isOfferMode) {
+            handleSendOffer();
+            return;
+        }
+        
         if (!inputText.trim() || !car || !profile || !user) return;
 
         const channelId = MessagingService.generateChannelId(
@@ -172,11 +181,45 @@ export default function ChatScreen() {
         };
 
         setInputText('');
+        Keyboard.dismiss();
         try {
             await MessagingService.sendMessage(channelId, msg);
         } catch (e) {
             console.error(e);
         }
+    };
+
+    const handleSendOffer = async () => {
+        if (!offerAmount.trim() || !car || !profile || !user) return;
+
+        const channelId = MessagingService.generateChannelId(
+            profile.numericId,
+            car.sellerNumericId || 0,
+            car.carNumericId || 0
+        );
+
+        const msg: Partial<RealtimeMessage> = {
+            senderId: profile.numericId,
+            senderFirebaseId: user.uid,
+            recipientId: car.sellerNumericId,
+            recipientFirebaseId: car.sellerId,
+            content: `OFFER:${offerAmount}`,
+            type: 'offer'
+        };
+
+        setOfferAmount('');
+        setIsOfferMode(false);
+        Keyboard.dismiss();
+        try {
+            await MessagingService.sendMessage(channelId, msg);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const handleQuickReply = (text: string) => {
+        setInputText(text);
+        handleSend();
     };
 
     if (loading) return (
@@ -207,6 +250,17 @@ export default function ChatScreen() {
                 renderItem={({ item }) => {
                     const isMe = item.senderFirebaseId === user?.uid;
                     const time = new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    
+                    if (item.type === 'offer') {
+                        return (
+                            <OfferBubble
+                                message={item}
+                                isMe={isMe}
+                                time={time}
+                            />
+                        );
+                    }
+                    
                     return (
                         <MessageBubble theme={theme} isMe={isMe}>
                             <MessageText theme={theme} isMe={isMe}>{item.content}</MessageText>
@@ -222,18 +276,40 @@ export default function ChatScreen() {
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
             >
+                <QuickReplies onReplyPress={handleQuickReply} />
+                
                 <InputBar theme={theme}>
-                    <TouchableOpacity style={{ marginRight: 12 }}>
-                        <Ionicons name="add-circle-outline" size={28} color={theme.colors.text.secondary} />
+                    <TouchableOpacity 
+                        style={{ marginRight: 12 }}
+                        onPress={() => setIsOfferMode(!isOfferMode)}
+                    >
+                        <Ionicons 
+                            name={isOfferMode ? "close-circle" : "pricetag"} 
+                            size={28} 
+                            color={isOfferMode ? theme.colors.error.main : theme.colors.primary.main} 
+                        />
                     </TouchableOpacity>
-                    <StyledInput
-                        theme={theme}
-                        placeholder="Type a message..."
-                        placeholderTextColor={theme.colors.text.disabled}
-                        value={inputText}
-                        onChangeText={setInputText}
-                        multiline
-                    />
+                    
+                    {isOfferMode ? (
+                        <StyledInput
+                            theme={theme}
+                            placeholder="Enter your offer amount (EUR)..."
+                            placeholderTextColor={theme.colors.text.disabled}
+                            value={offerAmount}
+                            onChangeText={setOfferAmount}
+                            keyboardType="numeric"
+                        />
+                    ) : (
+                        <StyledInput
+                            theme={theme}
+                            placeholder="Type a message..."
+                            placeholderTextColor={theme.colors.text.disabled}
+                            value={inputText}
+                            onChangeText={setInputText}
+                            multiline
+                        />
+                    )}
+                    
                     <SendButton theme={theme} onPress={handleSend}>
                         <Ionicons name="send" size={20} color="#fff" />
                     </SendButton>

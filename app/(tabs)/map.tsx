@@ -5,7 +5,7 @@ import { View, Dimensions, StyleSheet, ActivityIndicator } from 'react-native';
 import { theme } from '../../src/styles/theme';
 import { ListingService } from '../../src/services/ListingService';
 import { CarListing } from '../../src/types/CarListing';
-import { MobileHeader } from '../../src/components/common/MobileHeader';
+import MobileHeader from '../../src/components/common/MobileHeader';
 import { Ionicons } from '@expo/vector-icons';
 
 const { width, height } = Dimensions.get('window');

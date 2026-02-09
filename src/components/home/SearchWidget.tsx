@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/native';
 import { View, Platform, TouchableOpacity } from 'react-native';
 import { BlurView } from 'expo-blur';
@@ -8,24 +8,28 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Picker } from '@react-native-picker/picker'; // Ensure this is installed
 import { theme } from '../../styles/theme';
 import { AnimatedButton } from '../ui/AnimatedButton';
+import { ListingService } from '../../services/ListingService';
 
 const WidgetContainer = styled(BlurView)`
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
   width: 100%;
-  border-width: 1px;
-  border-color: rgba(255, 255, 255, 0.2);
+  border-width: 1.5px;
+  border-color: rgba(0, 243, 255, 0.4);
   margin-top: 20px;
+  ${Platform.OS === 'web' ? {
+    boxShadow: '0px 0px 15px rgba(0, 243, 255, 0.2)'
+  } : {}}
 `;
 
 const ContentContainer = styled.View`
-  padding: 16px;
-  background-color: rgba(255, 255, 255, 0.1); 
+  padding: 20px;
+  background-color: rgba(20, 30, 48, 0.6);
 `;
 
 const TabsContainer = styled.View`
   flex-direction: row;
-  background-color: rgba(241, 245, 249, 0.8); /* Light mode bg approximation */
+  background-color: rgba(241, 245, 249, 0.8);
   padding: 4px;
   border-bottom-width: 1px;
   border-bottom-color: rgba(0,0,0,0.05);
@@ -62,8 +66,14 @@ const Field = styled.View`
 const Label = styled.Text`
   font-size: 13px;
   font-weight: 500;
-  color: #ffffff; /* Contrast against dark hero image */
-  text-shadow: 0px 1px 2px rgba(0,0,0,0.5);
+  color: #ffffff;
+  ${Platform.OS === 'web' ? {
+    textShadow: '0px 1px 2px rgba(0, 0, 0, 0.5)'
+  } : {
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2
+  }}
 `;
 
 const PickerWrapper = styled.View`
@@ -118,6 +128,26 @@ export default function SearchWidget() {
   const [activeTab, setActiveTab] = useState<'all' | 'new' | 'used'>('all');
   const [make, setMake] = useState('');
   const [model, setModel] = useState('');
+  const [totalCars, setTotalCars] = useState('...');
+
+  // Load total cars count from server
+  useEffect(() => {
+    let isMounted = true;
+
+    ListingService.getGlobalStats()
+      .then(stats => {
+        if (isMounted) {
+          setTotalCars(stats.totalListings);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setTotalCars('1000+');
+        }
+      });
+
+    return () => { isMounted = false; };
+  }, []);
 
   // Static Data mimicking Web
   const makes = ['Audi', 'BMW', 'Mercedes-Benz', 'Toyota', 'Volkswagen'];
@@ -190,7 +220,7 @@ export default function SearchWidget() {
               end={{ x: 1, y: 1 }}
             >
               <Ionicons name="search" size={20} color="#fff" />
-              <ButtonText>Search 15,420 cars</ButtonText>
+              <ButtonText>Search {totalCars} cars</ButtonText>
             </GradientButton>
           </AnimatedButton>
 

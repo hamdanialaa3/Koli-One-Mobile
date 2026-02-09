@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "973379297533",
+    "project_id": "fire-new-globul",
+    "storage_bucket": "fire-new-globul.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:973379297533:android:kolione",
+        "android_client_info": {
+          "package_name": "com.hamdani.kolione"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "973379297533-auto.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "***REMOVED_FIREBASE_KEY***"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "973379297533-auto.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

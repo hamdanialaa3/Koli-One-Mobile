@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CarCard } from '../CarCard';
-import { ListingBase } from '../../types/listing.types';
+import { ListingBase } from '../../types/ListingBase';
 
 const { width } = Dimensions.get('window');
 

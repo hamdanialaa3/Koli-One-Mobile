@@ -1,6 +1,7 @@
 // src/services/ai/ai.service.ts
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { app } from '../firebase';
+import { logger } from '../logger-service';
 
 export interface CarData {
     make: string;
@@ -39,27 +40,45 @@ class AIService {
             const data = response.data as any; // Type depends on backend return
             return data.content || data.description || '';
         } catch (error) {
-            console.error('AI Service Error:', error);
+            logger.error('AI Service Error', error);
             throw error;
         }
     }
 
+
     /**
-     * Analyzes an image to identify car details (Future implementation via Gemini Vision)
-     * This would call a cloud function that wraps Gemini Vision API
+     * Analyzes an image to identify car details using Gemini Vision (Hybrid AI Engine)
      */
-    async analyzeCarImage(base64Image: string): Promise<Partial<CarData>> {
+    async analyzeCarImage(base64Image: string, price?: number): Promise<Partial<CarData>> {
         try {
-            // Placeholder for Phase 5.2 - Image Recognition
-            // const analyzeImageFunction = httpsCallable(this.functions, 'aiAnalyzeCarImage');
-            // const response = await analyzeImageFunction({ image: base64Image });
-            // return response.data as Partial<CarData>;
-            return {};
+            // Call the hybrid AI engine (Gemini Vision + DeepSeek Logic)
+            const evaluateCarFunction = httpsCallable(this.functions, 'evaluateCar');
+
+            // Note: marketAvg is optional, backend defaults to 50000 if not provided
+            const response = await evaluateCarFunction({
+                imageBase64: base64Image,
+                price: price || 0
+            });
+
+            const result = response.data as any;
+            const details = result.carDetails || {};
+
+            // Map AI response to mobile app CarData structure
+            return {
+                make: details.make || '',
+                model: details.model || '',
+                year: details.year ? parseInt(details.year.toString()) : undefined,
+                equipment: details.color ? [details.color] : [], // Store color in features/equipment temporarily
+                condition: details.condition || 'Good'
+            } as Partial<CarData>;
+
         } catch (error) {
-            console.error('AI Vision Error:', error);
+            logger.error('AI Vision Error', error);
+            // Return empty object on failure so the app doesn't crash, just doesn't autofill
             return {};
         }
     }
+
 }
 
 export const aiService = new AIService();

@@ -3,6 +3,7 @@ import styled from 'styled-components/native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../styles/theme';
 import { BlurView } from 'expo-blur';
+import { Platform } from 'react-native';
 
 const Container = styled.View`
   margin: 32px 20px;
@@ -42,14 +43,17 @@ const TrustText = styled.Text`
 
 const StatsCard = styled.View`
   width: 100%;
-  background-color: ${props => props.theme.colors.background.paper};
+  background-color: rgba(255, 255, 255, 0.03);
   border-radius: 20px;
   padding: 24px;
   margin-top: 24px;
   border-width: 1px;
-  border-color: ${props => props.theme.colors.border.muted};
+  border-color: rgba(255, 255, 255, 0.1);
   flex-direction: row;
   justify-content: space-around;
+  ${Platform.OS === 'web' ? {
+    boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.2)'
+  } : {}}
 `;
 
 const StatItem = styled.View`

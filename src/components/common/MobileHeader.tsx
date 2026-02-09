@@ -142,3 +142,5 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
         </SafeAreaView>
     );
 };
+
+export default MobileHeader;

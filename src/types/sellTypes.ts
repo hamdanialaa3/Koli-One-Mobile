@@ -9,6 +9,7 @@ export interface VehicleFormData {
     year: string;
     fuelType: string;
     mileage: string;
+    vin?: string; // TASK-12: VIN field (optional)
     power: string;
     transmission: string;
     driveType: string;

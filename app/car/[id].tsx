@@ -21,9 +21,13 @@ import { CarListing } from '../../src/types/CarListing';
 import { useAuth } from '../../src/contexts/AuthContext';
 import { AnimatedImage } from '../../src/components/ui/AnimatedImage';
 import { AnimatedButton } from '../../src/components/ui/AnimatedButton';
-import { PriceRating } from '../../src/components/car-details/PriceRating';
-import { CarDetailsSpecs } from '../../src/components/car-details/CarDetailsSpecs';
+// import { PriceRating } from '../../src/components/car-details/PriceRating'; // REMOVED
+// import { CarDetailsSpecs } from '../../src/components/car-details/CarDetailsSpecs'; // REMOVED
+import { CarDetailsGermanStyle } from '../../src/components/car-details/CarDetailsGermanStyle'; // ADDED
 import { CarDetailsSeller } from '../../src/components/car-details/CarDetailsSeller';
+import { CarDetailsReviews } from '../../src/components/car-details/CarDetailsReviews';
+import { PriceEstimatorCard } from '../../src/components/pricing';
+import VinCheckCard from '../../src/components/vin/VinCheckCard'; // TASK-12: VIN Check
 import { SimilarCars } from '../../src/components/car-details/SimilarCars';
 
 const { width } = Dimensions.get('window');
@@ -242,24 +246,32 @@ export default function CarDetailsScreen() {
           )}
         </ImageGallery>
 
-        <PriceRating price={car.price || 0} />
-
-        <ContentSection>
-          <Title theme={theme}>{car.make} {car.model}</Title>
-          <Price theme={theme}>{car.price?.toLocaleString()} {car.currency || 'EUR'}</Price>
-
-          <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
-            <Ionicons name="location-outline" size={16} color={theme.colors.text.secondary} />
-            <StatLabel theme={theme}>{car.city}, {car.region}</StatLabel>
-          </View>
-
-          <Description theme={theme}>
-            {car.description || 'No description provided.'}
-          </Description>
-        </ContentSection>
-
-        <CarDetailsSpecs car={car} />
+        <CarDetailsGermanStyle car={car} />
+        
+        {/* AI Price Estimator */}
+        {car.make && car.model && car.year && car.mileage && (
+          <PriceEstimatorCard
+            carData={{
+              make: car.make,
+              model: car.model,
+              year: car.year,
+              mileage: car.mileage,
+              fuelType: car.fuelType,
+              transmission: car.transmission,
+              location: car.location || car.city,
+              currentPrice: car.price
+            }}
+            currency={car.currency === 'BGN' ? 'лв' : '€'}
+          />
+        )}
+        
+        {/* VIN Check - TASK-12 */}
+        {car.vin && (
+          <VinCheckCard theme={theme} initialVin={car.vin} />
+        )}
+        
         <CarDetailsSeller car={car} />
+        <CarDetailsReviews car={car} />
 
         <SimilarCars currentCarId={car.id} make={car.make} price={car.price} />
 

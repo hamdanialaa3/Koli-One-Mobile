@@ -3,7 +3,7 @@ import styled from 'styled-components/native';
 import { FlatList, View, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../src/styles/theme';
-import { MobileHeader } from '../../src/components/common/MobileHeader';
+import MobileHeader from '../../src/components/common/MobileHeader';
 import { useAuth } from '../../src/contexts/AuthContext';
 import { MessagingService, RealtimeChannel } from '../../src/services/MessagingService';
 import { useRouter } from 'expo-router';

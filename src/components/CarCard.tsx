@@ -86,7 +86,13 @@ const Title = styled.Text`
   font-weight: 800;
   color: #fff;
   margin-bottom: 4px;
-  text-shadow: 0px 2px 4px rgba(0,0,0,0.3);
+  ${Platform.OS === 'web' ? {
+    textShadow: '0px 2px 4px rgba(0, 0, 0, 0.3)'
+  } : {
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4
+  }}
 `;
 
 const Price = styled.Text`
@@ -131,6 +137,8 @@ const FavoriteButton = styled.TouchableOpacity`
   z-index: 20;
 `;
 
+
+import { SocialPublishButton } from './social/SocialPublishButton';
 
 // ... exports ...
 
@@ -180,6 +188,10 @@ export const CarCard = React.memo(({ listing, onPress }: CarCardProps) => {
         <FavoriteButton activeOpacity={0.7} as={AnimatedButton} onPress={handleFavorite}>
           <Ionicons name="heart-outline" size={24} color="#fff" />
         </FavoriteButton>
+        {/* DEMO: Always Show for now, in prod check currentUserId === listing.ownerId */}
+        <View style={{ position: 'absolute', top: 70, right: 16, zIndex: 20 }}>
+          <SocialPublishButton adId={listing.id || 'demo_id'} adData={listing} />
+        </View>
 
         <ContentContainer>
           <Title numberOfLines={1}>{listing.make} {listing.model}</Title>

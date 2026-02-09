@@ -1,6 +1,6 @@
 // src/components/SmartCamera.tsx
 import React, { useState, useRef } from 'react';
-import { Camera, CameraType, FlashMode } from 'expo-camera';
+import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { Button, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import styled from 'styled-components/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -65,10 +65,10 @@ const InnerCircle = styled.View`
 `;
 
 export default function SmartCamera({ onCapture, onClose }: SmartCameraProps) {
-    const [type, setType] = useState(CameraType.back);
-    const [permission, requestPermission] = Camera.useCameraPermissions();
+    const [type] = useState<CameraType>('back');
+    const [permission, requestPermission] = useCameraPermissions();
     const [processing, setProcessing] = useState(false);
-    const cameraRef = useRef<Camera>(null);
+    const cameraRef = useRef<CameraView>(null);
 
     if (!permission) {
         // Camera permissions are still loading
@@ -105,7 +105,7 @@ export default function SmartCamera({ onCapture, onClose }: SmartCameraProps) {
 
     return (
         <View style={styles.container}>
-            <Camera style={styles.camera} type={type} ref={cameraRef}>
+            <CameraView style={styles.camera} facing={type} ref={cameraRef}>
                 <Overlay>
                     <TouchableOpacity onPress={onClose} style={{ marginTop: 40, alignSelf: 'flex-start' }}>
                         <Ionicons name="close-circle" size={40} color="#fff" />
@@ -130,7 +130,7 @@ export default function SmartCamera({ onCapture, onClose }: SmartCameraProps) {
                         <View style={{ width: '40px' as any }} />
                     </ControlsRow>
                 </Overlay>
-            </Camera>
+            </CameraView>
         </View>
     );
 }

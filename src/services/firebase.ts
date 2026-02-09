@@ -7,6 +7,7 @@ import { getDatabase, Database } from 'firebase/database';
 import { getAnalytics, Analytics, isSupported } from 'firebase/analytics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
+import { logger } from './logger-service';
 
 // Koli One Firebase Configuration
 const firebaseConfig = {
@@ -62,9 +63,9 @@ try {
 
     storage = getStorage(app);
 
-    console.log(`✅ Firebase initialized successfully on ${Platform.OS}`);
+    logger.info(`Firebase initialized successfully on ${Platform.OS}`);
 } catch (error) {
-    console.error('❌ Firebase initialization error:', error);
+    logger.error('Firebase initialization error', error);
 }
 
 export { app, auth, db, storage, rtdb, analytics };

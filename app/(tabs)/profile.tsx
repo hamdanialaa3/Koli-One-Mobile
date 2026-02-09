@@ -6,8 +6,8 @@ import { auth } from '../../src/services/firebase';
 import { useAuth } from '../../src/contexts/AuthContext';
 import { theme } from '../../src/styles/theme';
 import { Ionicons } from '@expo/vector-icons';
-import { MobileHeader } from '../../src/components/common/MobileHeader';
-import { Alert, ActivityIndicator, View, Linking, Platform, ScrollView } from 'react-native';
+import MobileHeader from '../../src/components/common/MobileHeader';
+import { Alert, ActivityIndicator, View, Linking, Platform, ScrollView, TouchableOpacity } from 'react-native';
 import { PlatformSyncService } from '../../src/services/PlatformSyncService';
 import { SOCIAL_LINKS } from '../../src/constants/SocialLinks';
 import { useRouter } from 'expo-router';
@@ -316,21 +316,27 @@ export default function ProfileScreen() {
     {
       title: 'Dashboard',
       items: [
+        { label: 'Executive Stats', icon: 'grid-outline', route: '/profile/dashboard' },
         { label: 'My Ads', icon: 'car-sport-outline', route: '/profile/my-ads' },
-        { label: 'Campaigns', icon: 'megaphone-outline', route: '/profile/campaigns' },
-        { label: 'Analytics', icon: 'bar-chart-outline', route: '/profile/analytics' },
+        { label: 'My Drafts', icon: 'document-text-outline', route: '/profile/drafts' },
+        { label: 'Social Feed', icon: 'people-outline', route: '/social' },
       ]
     },
     {
       title: 'Activity',
       items: [
+        { label: 'My Reviews', icon: 'star-outline', route: '/my-reviews' },
         { label: 'Favorites', icon: 'heart-outline', route: '/profile/favorites' },
+        { label: 'Saved Searches', icon: 'search-outline', route: '/profile/saved-searches' },
         { label: 'Consultations', icon: 'chatbubbles-outline', route: '/profile/consultations' },
+        { label: 'Analytics', icon: 'bar-chart-outline', route: '/profile/analytics' },
+        { label: 'Campaigns', icon: 'megaphone-outline', route: '/profile/campaigns' },
       ]
     },
     {
-      title: 'Account',
+      title: 'Account & Community',
       items: [
+        { label: 'User Directory', icon: 'people-circle-outline', route: '/profile/users' },
         { label: 'Settings', icon: 'settings-outline', route: '/profile/settings' },
       ]
     }
@@ -383,6 +389,23 @@ export default function ProfileScreen() {
             <Ionicons name="shield-checkmark" size={14} color={theme.colors.primary.main} />
             <AccessGrantedText theme={theme}>ACCESS GRANTED • NEURAL LINK ACTIVE</AccessGrantedText>
           </AccessGrantedBanner>
+
+          <TouchableOpacity
+            onPress={() => router.push('/profile/edit')}
+            style={{
+              marginTop: 16,
+              paddingVertical: 8,
+              paddingHorizontal: 20,
+              borderRadius: 20,
+              backgroundColor: theme.colors.primary.main,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8
+            }}
+          >
+            <Ionicons name="create-outline" size={16} color="white" />
+            <MenuText style={{ color: 'white', marginLeft: 0, fontSize: 14 }}>Edit Profile</MenuText>
+          </TouchableOpacity>
         </CommanderHero>
 
         <StatsRow theme={theme}>

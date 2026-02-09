@@ -1,33 +1,39 @@
 import { DefaultTheme } from 'styled-components/native';
 import { Platform } from 'react-native';
 
-// Professional Mobile Palette (Based on Web Project)
+// Professional Mobile Palette (Based on Web Project Koli One)
 export const colors = {
   primary: {
-    main: '#003366',        // Dark Blue
-    light: '#0066CC',       // Light Blue
-    dark: '#002244',        // Darker Blue
+    main: '#003366',        // Dark Blue (Web Unified)
+    light: '#0055AA',
+    dark: '#002244',
     contrastText: '#ffffff'
   },
   secondary: {
-    main: '#CC0000',        // Red (Action)
-    light: '#FF3333',
-    dark: '#990000',
+    main: '#FF7900',        // Signature Orange (from old primary)
+    light: '#33DDBB',
+    dark: '#00AA88',
     contrastText: '#ffffff'
   },
   accent: {
-    main: '#FF7900',        // Orange (Mobile Highlight)
-    light: '#FF9433',
-    dark: '#E56D00',
+    main: '#00D4AA',        // Tech Green (from old secondary)
+    light: '#9580FF',
+    dark: '#624ECC',
     contrastText: '#ffffff'
   },
+  brand: {
+    dark: '#003366',        // Dark Blue (unified)
+    light: '#F8F9FA',       // Clean Light Background
+    glass: 'rgba(255, 255, 255, 0.1)',
+  },
   background: {
-    default: '#f4f4f4',
+    default: '#F8F9FA',     // Clean Light
     paper: '#ffffff',
-    dark: '#f0f0f0',
+    subtle: '#F0F2F5',      // Added for photo placeholders
+    dark: '#003366',
   },
   text: {
-    primary: '#333333',
+    primary: '#003366',     // Dark Blue (unified)
     secondary: '#666666',
     disabled: '#999999',
     inverse: '#ffffff'
@@ -35,13 +41,17 @@ export const colors = {
   border: {
     default: '#E2E8F0',
     muted: '#CBD5E1',
-    focus: '#0066CC'
+    focus: '#003366'
   },
   status: {
     success: '#28A745',
     warning: '#FFC107',
-    error: '#CC0000',
-    info: '#0066CC'
+    error: '#DC3545',
+    info: '#7B61FF'
+  },
+  glassmorphism: {
+    background: 'rgba(255, 255, 255, 0.05)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
   }
 };
 
@@ -99,13 +109,13 @@ export const shadows = {
   }),
   md: Platform.select({
     web: {
-      boxShadow: '0px 2px 3.84px rgba(0, 0, 0, 0.25)',
+      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)', // Web Premium Shadow
     },
     default: {
       shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
       elevation: 5
     }
   })
