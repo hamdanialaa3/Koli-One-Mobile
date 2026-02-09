@@ -1,21 +1,24 @@
-// src/types/firestore-models.ts
-import { Timestamp } from 'firebase/firestore';
-import type { BulgarianUser } from './user/bulgarian-user.types';
-import type { DealershipInfo } from './dealership/dealership.types';
+/**
+ * Firestore base models — Re-exported from @koli-one/shared.
+ * @version 3.0.0 — Unified with shared/
+ */
+export type {
+  AccountType,
+  SubscriptionTier,
+  BaseDocument,
+  UserBase,
+} from '@koli-one/shared';
 
-export type { BulgarianUser, DealershipInfo };
+// Re-export local types that are mobile-specific
+export type { BulgarianUser } from './user/bulgarian-user.types';
+export type { DealershipInfo } from './dealership/dealership.types';
 
-export interface BaseDocument {
-    id: string;
-    createdAt: Timestamp;
-    updatedAt: Timestamp;
-}
-
+// Backward compat: Car extends BaseDocument (simplified for mobile)
+import type { BaseDocument } from '@koli-one/shared';
 export interface Car extends BaseDocument {
-    make: string;
-    model: string;
-    year: number;
-    price: number;
-    currency: 'EUR';
-    // ... simplified for mobile start
+  make: string;
+  model: string;
+  year: number;
+  price: number;
+  currency: 'EUR';
 }

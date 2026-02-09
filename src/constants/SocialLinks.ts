@@ -1,9 +1,6 @@
-export const SOCIAL_LINKS = {
-    INSTAGRAM: 'https://www.instagram.com/kolione/',
-    TIKTOK: 'https://www.tiktok.com/@mobilebg.eu',
-    THREADS: 'https://www.threads.com/@kolione',
-    LINKEDIN: 'https://www.linkedin.com/in/koli-one-a011993a9/',
-    FACEBOOK: 'https://www.facebook.com/koli.one/',
-    YOUTUBE: 'https://www.youtube.com/@Kolionebg',
-    X: 'https://x.com/kolionebg'
-};
+/**
+ * Social Links — Re-exported from @koli-one/shared.
+ * @version 3.0.0 — Unified with shared/
+ */
+export { SOCIAL_LINKS } from '@koli-one/shared';
+export type { SocialPlatform } from '@koli-one/shared';

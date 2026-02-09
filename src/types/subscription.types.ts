@@ -1,39 +1,23 @@
-export interface AIQuota {
-    userId: string;
-    tier: 'free' | 'pro' | 'dealer' | 'enterprise';
+/**
+ * Subscription types — Re-exported from @koli-one/shared.
+ * @version 2.0.0 — Unified with shared/
+ *
+ * AIQuota, FeatureKey come from shared.
+ * SubscriptionPlan stays local (mobile billing UI only).
+ */
 
-    // Daily Limits
-    dailyImageAnalysis: number;     // e.g., 5
-    dailyPriceSuggestions: number;   // e.g., 3
-    dailyChatMessages: number;       // e.g., 10
-    dailyProfileAnalysis: number;    // e.g., 2
+export type { AIQuota, FeatureKey } from '@koli-one/shared';
 
-    // Usage Tracking
-    usedImageAnalysis: number;
-    usedPriceSuggestions: number;
-    usedChatMessages: number;
-    usedProfileAnalysis: number;
-
-    lastResetDate: string;          // ISO Date YYYY-MM-DD
-    totalCost: number;
-
-    // Subscription Details
-    subscriptionId?: string;
-    subscriptionStatus?: 'active' | 'canceled' | 'past_due';
-    periodEnd?: Date;
-}
-
-export type FeatureKey = 'ImageAnalysis' | 'PriceSuggestions' | 'ChatMessages' | 'ProfileAnalysis';
-
+/** Mobile-specific subscription plan for billing UI */
 export interface SubscriptionPlan {
-    id: 'free' | 'pro' | 'dealer';
-    name: string;
-    price: number;
-    currency: string;
-    features: string[];
-    limits: {
-        imageAnalysis: number; // -1 for unlimited
-        priceSuggestions: number;
-        chatMessages: number;
-    };
+  id: 'free' | 'pro' | 'dealer';
+  name: string;
+  price: number;
+  currency: string;
+  features: string[];
+  limits: {
+    imageAnalysis: number; // -1 for unlimited
+    priceSuggestions: number;
+    chatMessages: number;
+  };
 }
