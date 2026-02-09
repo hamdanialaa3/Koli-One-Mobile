@@ -90,9 +90,9 @@
         "projectId": "a2efe325-74d5-4772-a200-0d44d16b484e"
       },
       "firebaseProjectId": "fire-new-globul",
-      "firebaseApiKey": "***REMOVED_FIREBASE_KEY***",
-      "algoliaAppId": "YOUR_ALGOLIA_APP_ID",
-      "algoliaSearchApiKey": "YOUR_ALGOLIA_SEARCH_API_KEY",
+      "firebaseApiKey": "REPLACE_WITH_FIREBASE_API_KEY",
+      "algoliaAppId": "REPLACE_WITH_ALGOLIA_APP_ID",
+      "algoliaSearchApiKey": "REPLACE_WITH_ALGOLIA_SEARCH_API_KEY",
       "algoliaIndexName": "cars",
       "router": {}
     },

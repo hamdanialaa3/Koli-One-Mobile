@@ -33,6 +33,12 @@ yarn-error.*
 # local env files
 .env*.local
 
+# Firebase Config Files (NEVER commit real configs)
+google-services.json
+GoogleService-Info.plist
+google-services.template.json
+GoogleService-Info.template.plist
+
 # typescript
 *.tsbuildinfo
 
