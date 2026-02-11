@@ -69,20 +69,20 @@ export const SocialPublishButton: React.FC<SocialPublishButtonProps> = ({ adId, 
 
     const handlePublish = async () => {
         Alert.alert(
-            "نشر على فيسبوك",
-            "هل تريد نشر هذا الإعلان الآن على صفحة Koli One الرسمية؟",
+            "Publish on Facebook",
+            "Do you want to publish this listing on the official Koli One page?",
             [
-                { text: "إلغاء", style: "cancel" },
+                { text: "Cancel", style: "cancel" },
                 {
-                    text: "نعم، انشر الآن",
+                    text: "Yes, publish now",
                     onPress: async () => {
                         setLoading(true);
                         try {
                             await OfficialPublisherService.publishAd(adId, adData);
                             setSuccess(true);
-                            Alert.alert("تم النشر بنجاح!", "الإعلان يظهر الآن على فيسبوك.");
+                            Alert.alert("Published successfully!", "The listing is now visible on Facebook.");
                         } catch (error) {
-                            Alert.alert("خطأ", "فشل الاتصال بنظام النشر الآلي.");
+                            Alert.alert("Error", "Failed to connect to the auto-publishing system.");
                         } finally {
                             setLoading(false);
                         }

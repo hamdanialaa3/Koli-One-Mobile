@@ -62,7 +62,7 @@ export const SmartSellFlow: React.FC<SmartSellFlowProps> = ({ visible, onClose }
       const carData = await aiService.analyzeCarImage(base64Image);
       
       if (!carData.make || !carData.model) {
-        throw new Error(isBG ? 'لم يتمكن الذكاء الاصطناعي من التعرف على السيارة' : 'AI could not recognize the car');
+        throw new Error(isBG ? 'ИИ не можа да разпознае автомобила' : 'AI could not recognize the car');
       }
       
       logger.info('AI analysis completed', { make: carData.make, model: carData.model });
@@ -124,11 +124,11 @@ export const SmartSellFlow: React.FC<SmartSellFlowProps> = ({ visible, onClose }
       
       <ActivityIndicator size="large" color={theme.colors.primary.main} />
       
-      <Title theme={theme}>{isBG ? 'الذكاء الاصطناعي يحلل الصورة...' : 'AI Analyzing Photo...'}</Title>
+      <Title theme={theme}>{isBG ? 'ИИ анализира снимката...' : 'AI Analyzing Photo...'}</Title>
       
       <Description theme={theme}>
         {isBG 
-          ? 'جاري التعرف على الماركة، الموديل، السنة، اللون والحالة'
+          ? 'Разпознаване на марка, модел, година, цвят и състояние'
           : 'Detecting make, model, year, color and condition'}
       </Description>
       
@@ -147,44 +147,44 @@ export const SmartSellFlow: React.FC<SmartSellFlowProps> = ({ visible, onClose }
       <SuccessBadge theme={theme}>
         <Ionicons name="checkmark-circle" size={32} color={theme.colors.success} />
         <SuccessText theme={theme}>
-          {isBG ? 'تم التعرف على السيارة!' : 'Car Recognized!'}
+          {isBG ? 'Автомобилът е разпознат!' : 'Car Recognized!'}
         </SuccessText>
       </SuccessBadge>
       
       <DataSection theme={theme}>
-        <SectionTitle theme={theme}>{isBG ? 'البيانات المستخرجة' : 'Extracted Data'}</SectionTitle>
+        <SectionTitle theme={theme}>{isBG ? 'Извлечени данни' : 'Extracted Data'}</SectionTitle>
         
         {analyzedData?.make && (
           <DataRow theme={theme}>
-            <DataLabel theme={theme}>{isBG ? 'الماركة' : 'Make'}:</DataLabel>
+            <DataLabel theme={theme}>{isBG ? 'Марка' : 'Make'}:</DataLabel>
             <DataValue theme={theme}>{analyzedData.make}</DataValue>
           </DataRow>
         )}
         
         {analyzedData?.model && (
           <DataRow theme={theme}>
-            <DataLabel theme={theme}>{isBG ? 'الموديل' : 'Model'}:</DataLabel>
+            <DataLabel theme={theme}>{isBG ? 'Модел' : 'Model'}:</DataLabel>
             <DataValue theme={theme}>{analyzedData.model}</DataValue>
           </DataRow>
         )}
         
         {analyzedData?.year && (
           <DataRow theme={theme}>
-            <DataLabel theme={theme}>{isBG ? 'السنة' : 'Year'}:</DataLabel>
+            <DataLabel theme={theme}>{isBG ? 'Година' : 'Year'}:</DataLabel>
             <DataValue theme={theme}>{analyzedData.year}</DataValue>
           </DataRow>
         )}
         
         {analyzedData?.equipment && analyzedData.equipment.length > 0 && (
           <DataRow theme={theme}>
-            <DataLabel theme={theme}>{isBG ? 'اللون' : 'Color'}:</DataLabel>
+            <DataLabel theme={theme}>{isBG ? 'Цвят' : 'Color'}:</DataLabel>
             <DataValue theme={theme}>{analyzedData.equipment[0]}</DataValue>
           </DataRow>
         )}
         
         {analyzedData?.condition && (
           <DataRow theme={theme}>
-            <DataLabel theme={theme}>{isBG ? 'الحالة' : 'Condition'}:</DataLabel>
+            <DataLabel theme={theme}>{isBG ? 'Състояние' : 'Condition'}:</DataLabel>
             <DataValue theme={theme}>{analyzedData.condition}</DataValue>
           </DataRow>
         )}
@@ -193,18 +193,18 @@ export const SmartSellFlow: React.FC<SmartSellFlowProps> = ({ visible, onClose }
       <ActionButtons>
         <RetryButton theme={theme} onPress={handleRetry}>
           <Ionicons name="camera" size={20} color={theme.colors.text.primary} />
-          <ButtonText theme={theme}>{isBG ? 'إعادة المحاولة' : 'Retry'}</ButtonText>
+          <ButtonText theme={theme}>{isBG ? 'Опитай отново' : 'Retry'}</ButtonText>
         </RetryButton>
         
         <ContinueButton theme={theme} onPress={handleContinueToForm}>
           <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
-          <ButtonText light>{isBG ? 'متابعة إلى النموذج' : 'Continue to Form'}</ButtonText>
+          <ButtonText light>{isBG ? 'Продължи към формата' : 'Continue to Form'}</ButtonText>
         </ContinueButton>
       </ActionButtons>
       
       <Hint theme={theme}>
         {isBG 
-          ? 'يمكنك تعديل هذه البيانات لاحقاً في النموذج'
+          ? 'Можете да редактирате тези данни по-късно във формата'
           : 'You can edit this data later in the form'}
       </Hint>
     </PreviewContainer>
@@ -224,25 +224,25 @@ export const SmartSellFlow: React.FC<SmartSellFlowProps> = ({ visible, onClose }
         <Ionicons name="alert-circle" size={64} color={theme.colors.error} />
       </ErrorIcon>
       
-      <ErrorTitle theme={theme}>{isBG ? 'فشل التحليل' : 'Analysis Failed'}</ErrorTitle>
+      <ErrorTitle theme={theme}>{isBG ? 'Анализът не успя' : 'Analysis Failed'}</ErrorTitle>
       
       <ErrorMessage theme={theme}>{error}</ErrorMessage>
       
       <ErrorHint theme={theme}>
         {isBG 
-          ? 'تأكد من أن الصورة واضحة وتحتوي على السيارة بالكامل'
+          ? 'Уверете се, че снимката е ясна и показва целия автомобил'
           : 'Make sure the photo is clear and contains the full car'}
       </ErrorHint>
       
       <ActionButtons>
         <RetryButton theme={theme} onPress={handleRetry}>
           <Ionicons name="camera" size={20} color={theme.colors.text.primary} />
-          <ButtonText theme={theme}>{isBG ? 'المحاولة مرة أخرى' : 'Try Again'}</ButtonText>
+          <ButtonText theme={theme}>{isBG ? 'Опитай отново' : 'Try Again'}</ButtonText>
         </RetryButton>
         
         <ManualButton theme={theme} onPress={() => { handleClose(); router.push('/(tabs)/sell'); }}>
           <Ionicons name="create" size={20} color={theme.colors.text.primary} />
-          <ButtonText theme={theme}>{isBG ? 'إدخال يدوي' : 'Manual Entry'}</ButtonText>
+          <ButtonText theme={theme}>{isBG ? 'Ръчно въвеждане' : 'Manual Entry'}</ButtonText>
         </ManualButton>
       </ActionButtons>
     </ErrorContainer>

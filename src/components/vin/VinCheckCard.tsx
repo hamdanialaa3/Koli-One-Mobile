@@ -1,6 +1,5 @@
 /**
  * VIN Check Card Component
- * كارت فحص رقم الشاصي (VIN)
  * 
  * Displays VIN check results with trust badge
  * Shows ownership count + accident history
@@ -40,8 +39,8 @@ const VinCheckCard: React.FC<VinCheckCardProps> = ({ theme, initialVin, onCheckC
   const handleCheck = async () => {
     if (!vin || vin.length !== 17) {
       Alert.alert(
-        isBG ? 'خطأ' : 'Error',
-        isBG ? 'رقم الشاصي يجب أن يحتوي على 17 حرفاً' : 'VIN must be 17 characters'
+        isBG ? 'Грешка' : 'Error',
+        isBG ? 'VIN номерът трябва да е 17 символа' : 'VIN must be 17 characters'
       );
       return;
     }
@@ -66,8 +65,8 @@ const VinCheckCard: React.FC<VinCheckCardProps> = ({ theme, initialVin, onCheckC
     } catch (error) {
       logger.error('VIN check failed', error as Error);
       Alert.alert(
-        isBG ? 'خطأ' : 'Error',
-        isBG ? 'فشل فحص رقم الشاصي. حاول مرة أخرى.' : 'Failed to check VIN. Please try again.'
+        isBG ? 'Грешка' : 'Error',
+        isBG ? 'Неуспешна проверка на VIN. Опитайте отново.' : 'Failed to check VIN. Please try again.'
       );
     } finally {
       setIsLoading(false);
@@ -102,13 +101,13 @@ const VinCheckCard: React.FC<VinCheckCardProps> = ({ theme, initialVin, onCheckC
       <Header>
         <Ionicons name="shield-checkmark" size={32} color={theme.colors.primary} />
         <HeaderText theme={theme}>
-          {isBG ? 'فحص رقم الشاصي (VIN)' : 'VIN Check'}
+          {isBG ? 'Проверка на VIN' : 'VIN Check'}
         </HeaderText>
       </Header>
       
       <Description theme={theme}>
         {isBG 
-          ? 'تحقق من تاريخ السيارة وعدد الملاك السابقين والحوادث'
+          ? 'Проверете историята на автомобила, предишни собственици и инциденти'
           : 'Verify vehicle history, previous owners, and accident records'}
       </Description>
       
@@ -118,7 +117,7 @@ const VinCheckCard: React.FC<VinCheckCardProps> = ({ theme, initialVin, onCheckC
           theme={theme}
           value={vin}
           onChangeText={(text) => setVin(text.toUpperCase().replace(/\s/g, ''))}
-          placeholder={isBG ? 'أدخل رقم الشاصي (17 حرف)' : 'Enter VIN (17 characters)'}
+          placeholder={isBG ? 'Въведете VIN (17 символа)' : 'Enter VIN (17 characters)'}
           placeholderTextColor={theme.colors.textSecondary}
           maxLength={17}
           autoCapitalize="characters"
@@ -143,7 +142,7 @@ const VinCheckCard: React.FC<VinCheckCardProps> = ({ theme, initialVin, onCheckC
             <>
               <Ionicons name="search" size={20} color="#FFFFFF" style={{ marginRight: 8 }} />
               <ButtonText>
-                {isBG ? 'فحص الآن' : 'Check Now'}
+                {isBG ? 'Провери сега' : 'Check Now'}
               </ButtonText>
             </>
           )}
@@ -169,28 +168,28 @@ const VinCheckCard: React.FC<VinCheckCardProps> = ({ theme, initialVin, onCheckC
               <SectionTitle theme={theme}>
                 <Ionicons name="car-sport" size={20} color={theme.colors.primary} />
                 <SectionTitleText theme={theme}>
-                  {isBG ? 'معلومات السيارة' : 'Vehicle Information'}
+                  {isBG ? 'Информация за автомобила' : 'Vehicle Information'}
                 </SectionTitleText>
               </SectionTitle>
               
               <InfoRow>
-                <InfoLabel theme={theme}>{isBG ? 'الماركة' : 'Make'}:</InfoLabel>
+                <InfoLabel theme={theme}>{isBG ? 'Марка' : 'Make'}:</InfoLabel>
                 <InfoValue theme={theme}>{result.vehicleInfo.make}</InfoValue>
               </InfoRow>
               
               <InfoRow>
-                <InfoLabel theme={theme}>{isBG ? 'الموديل' : 'Model'}:</InfoLabel>
+                <InfoLabel theme={theme}>{isBG ? 'Модел' : 'Model'}:</InfoLabel>
                 <InfoValue theme={theme}>{result.vehicleInfo.model}</InfoValue>
               </InfoRow>
               
               <InfoRow>
-                <InfoLabel theme={theme}>{isBG ? 'السنة' : 'Year'}:</InfoLabel>
+                <InfoLabel theme={theme}>{isBG ? 'Година' : 'Year'}:</InfoLabel>
                 <InfoValue theme={theme}>{result.vehicleInfo.year}</InfoValue>
               </InfoRow>
               
               {result.vehicleInfo.plantCountry && (
                 <InfoRow>
-                  <InfoLabel theme={theme}>{isBG ? 'بلد الصنع' : 'Made in'}:</InfoLabel>
+                  <InfoLabel theme={theme}>{isBG ? 'Произведен в' : 'Made in'}:</InfoLabel>
                   <InfoValue theme={theme}>{result.vehicleInfo.plantCountry}</InfoValue>
                 </InfoRow>
               )}
@@ -203,36 +202,36 @@ const VinCheckCard: React.FC<VinCheckCardProps> = ({ theme, initialVin, onCheckC
               <SectionTitle theme={theme}>
                 <Ionicons name="time" size={20} color={theme.colors.primary} />
                 <SectionTitleText theme={theme}>
-                  {isBG ? 'التاريخ' : 'History'}
+                  {isBG ? 'История' : 'History'}
                 </SectionTitleText>
               </SectionTitle>
               
               <InfoRow>
-                <InfoLabel theme={theme}>{isBG ? 'عدد الملاك السابقين' : 'Previous Owners'}:</InfoLabel>
+                <InfoLabel theme={theme}>{isBG ? 'Предишни собственици' : 'Previous Owners'}:</InfoLabel>
                 <InfoValue theme={theme} highlight={result.historyInfo.ownershipCount > 2}>
                   {result.historyInfo.ownershipCount}
                 </InfoValue>
               </InfoRow>
               
               <InfoRow>
-                <InfoLabel theme={theme}>{isBG ? 'تاريخ الحوادث' : 'Accident History'}:</InfoLabel>
+                <InfoLabel theme={theme}>{isBG ? 'Инциденти' : 'Accident History'}:</InfoLabel>
                 <InfoValue 
                   theme={theme} 
                   highlight={result.historyInfo.hasAccidentHistory}
                 >
                   {result.historyInfo.hasAccidentHistory 
-                    ? (isBG ? `نعم (${result.historyInfo.accidentSeverity})` : `Yes (${result.historyInfo.accidentSeverity})`)
-                    : (isBG ? 'لا' : 'No')
+                    ? (isBG ? `Да (${result.historyInfo.accidentSeverity})` : `Yes (${result.historyInfo.accidentSeverity})`)
+                    : (isBG ? 'Не' : 'No')
                   }
                 </InfoValue>
               </InfoRow>
               
               {result.historyInfo.source && (
                 <DataSource theme={theme}>
-                  {isBG ? 'المصدر' : 'Source'}: {
-                    result.historyInfo.source === 'crowdsourced' ? (isBG ? 'بيانات المجتمع' : 'Community Data') :
-                    result.historyInfo.source === 'seller_provided' ? (isBG ? 'من البائع' : 'Seller Provided') :
-                    (isBG ? 'غير متوفر' : 'Unavailable')
+                  {isBG ? 'Източник' : 'Source'}: {
+                    result.historyInfo.source === 'crowdsourced' ? (isBG ? 'Данни от общността' : 'Community Data') :
+                    result.historyInfo.source === 'seller_provided' ? (isBG ? 'Предоставено от продавача' : 'Seller Provided') :
+                    (isBG ? 'Недостъпно' : 'Unavailable')
                   }
                 </DataSource>
               )}
@@ -254,7 +253,7 @@ const VinCheckCard: React.FC<VinCheckCardProps> = ({ theme, initialVin, onCheckC
           {/* Clear Button */}
           <ClearButton onPress={handleClear}>
             <ClearButtonText theme={theme}>
-              {isBG ? 'فحص رقم آخر' : 'Check Another VIN'}
+              {isBG ? 'Провери друг VIN' : 'Check Another VIN'}
             </ClearButtonText>
           </ClearButton>
         </ResultsContainer>
@@ -265,7 +264,7 @@ const VinCheckCard: React.FC<VinCheckCardProps> = ({ theme, initialVin, onCheckC
         <Ionicons name="information-circle" size={16} color={theme.colors.textSecondary} />
         <FooterText theme={theme}>
           {isBG 
-            ? 'تعتمد البيانات على مصادر NHTSA والبيانات المقدمة من المجتمع'
+            ? 'Данните са базирани на източници от NHTSA и информация от общността'
             : 'Data based on NHTSA sources and community-provided information'}
         </FooterText>
       </FooterNote>

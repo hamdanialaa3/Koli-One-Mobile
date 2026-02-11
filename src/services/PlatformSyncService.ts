@@ -34,12 +34,15 @@ export class PlatformSyncService {
      * Syncs: activeListings, totalViews, totalMessages
      */
     static subscribeToUserStats(userId: string, callback: (stats: any) => void) {
-        return onSnapshot(doc(db, 'users', userId), (doc) => {
+        let isActive = true;
+        const unsubscribe = onSnapshot(doc(db, 'users', userId), (doc) => {
+            if (!isActive) return;
             if (doc.exists()) {
                 const data = doc.data() as BulgarianUser;
                 callback(data.stats);
             }
         });
+        return () => { isActive = false; unsubscribe(); };
     }
 
     /**
@@ -105,9 +108,12 @@ export class PlatformSyncService {
             collection(db, `users/${userId}/notifications`),
             where('read', '==', false)
         );
-        return onSnapshot(q, (snap) => {
+        let isActive = true;
+        const unsubscribe = onSnapshot(q, (snap) => {
+            if (!isActive) return;
             callback(snap.size);
         });
+        return () => { isActive = false; unsubscribe(); };
     }
 
     /**

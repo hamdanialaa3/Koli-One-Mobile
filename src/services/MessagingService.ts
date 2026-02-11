@@ -108,8 +108,10 @@ export class MessagingService {
      */
     static subscribeToUserChannels(userNumericId: number, callback: (channels: RealtimeChannel[]) => void) {
         const userChannelsRef = ref(rtdb, `user_channels/${userNumericId}`);
+        let isActive = true;
 
-        return onValue(userChannelsRef, async (snapshot) => {
+        const unsub = onValue(userChannelsRef, async (snapshot) => {
+            if (!isActive) return;
             if (!snapshot.exists()) {
                 callback([]);
                 return;
@@ -119,13 +121,22 @@ export class MessagingService {
             const channels: RealtimeChannel[] = [];
 
             for (const id of channelIds) {
+                if (!isActive) return;
                 const cRef = ref(rtdb, `channels/${id}`);
                 const cSnap = await get(cRef);
+                if (!isActive) return;
                 if (cSnap.exists()) {
                     channels.push({ id, ...cSnap.val() });
                 }
             }
-            callback(channels.sort((a, b) => b.updatedAt - a.updatedAt));
+            if (isActive) {
+                callback(channels.sort((a, b) => b.updatedAt - a.updatedAt));
+            }
         });
+
+        return () => {
+            isActive = false;
+            unsub();
+        };
     }
 }

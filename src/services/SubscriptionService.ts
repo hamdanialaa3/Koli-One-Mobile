@@ -64,7 +64,9 @@ export class SubscriptionService {
 
         const quotaRef = doc(db, 'ai_quotas', currentUser.uid);
 
-        return onSnapshot(quotaRef, (doc) => {
+        let isActive = true;
+        const unsubscribe = onSnapshot(quotaRef, (doc) => {
+            if (!isActive) return;
             if (doc.exists()) {
                 callback(doc.data() as AIQuota);
             } else {
@@ -74,6 +76,7 @@ export class SubscriptionService {
                 });
             }
         });
+        return () => { isActive = false; unsubscribe(); };
     }
 
     /**

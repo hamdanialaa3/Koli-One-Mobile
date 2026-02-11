@@ -38,7 +38,7 @@ export const SimilarCars: React.FC<SimilarCarsProps> = ({ currentCarId, make, pr
                 const others = all.filter(c => c.id !== currentCarId && c.make === make).slice(0, 5);
                 setSimilarCars(others as unknown as CarListing[]);
             } catch (e) {
-                console.log("Error fetching similar cars", e);
+                // Error fetching similar cars - non-critical, fail silently
             }
         };
         if (make) fetchSimilar();

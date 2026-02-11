@@ -27,24 +27,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let isActive = true;
         // Only set listener if auth is initialized successfully
         if (auth) {
             const unsubscribe = onAuthStateChanged(auth, async (usr) => {
+                if (!isActive) return;
                 setUser(usr);
                 if (usr) {
                     // Fetch existing profile
                     let userProfile = await getUserProfile(usr.uid);
+                    if (!isActive) return;
                     // If no profile, create one (handles numeric ID generation)
                     if (!userProfile) {
                         userProfile = await createUserProfile(usr);
                     }
+                    if (!isActive) return;
                     setProfile(userProfile);
                 } else {
                     setProfile(null);
                 }
                 setLoading(false);
             });
-            return unsubscribe;
+            return () => {
+                isActive = false;
+                unsubscribe();
+            };
         } else {
             setLoading(false);
         }

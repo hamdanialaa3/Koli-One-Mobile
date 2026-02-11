@@ -83,13 +83,16 @@ export class ConversationService {
             orderBy('lastMessageTime', 'desc')
         );
 
-        return onSnapshot(q, (snapshot) => {
+        let isActive = true;
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            if (!isActive) return;
             const convs = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             } as Conversation));
             onUpdate(convs);
         });
+        return () => { isActive = false; unsubscribe(); };
     }
 
     /**
@@ -102,12 +105,15 @@ export class ConversationService {
             limit(50)
         );
 
-        return onSnapshot(q, (snapshot) => {
+        let isActive = true;
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            if (!isActive) return;
             const msgs = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             } as Message));
             onUpdate(msgs);
         });
+        return () => { isActive = false; unsubscribe(); };
     }
 }

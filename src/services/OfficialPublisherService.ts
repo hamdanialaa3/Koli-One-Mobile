@@ -1,12 +1,9 @@
 // axios replaced with fetch for compatibility
 // import axios from 'axios';
-import { Platform } from 'react-native';
 import { logger } from './logger-service';
 
-// In PROD, this comes from an env variable.
-// For Local Dev (Android/iOS), Use local machine IP, not localhost.
-// Replace with your machine's IP (e.g. 192.168.1.x) if testing on physical device.
-const API_URL = Platform.OS === 'android' ? 'http://10.0.2.2:3005' : 'http://localhost:3005';
+// Production Cloud Functions URL. Override with EXPO_PUBLIC_API_URL env var for local dev.
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'https://europe-west1-fire-new-globul.cloudfunctions.net';
 
 export const OfficialPublisherService = {
     publishAd: async (adId: string, adData: any) => {

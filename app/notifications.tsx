@@ -65,6 +65,7 @@ export default function NotificationsScreen() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let isActive = true;
         if (user) {
             const q = query(
                 collection(db, `users/${user.uid}/notifications`),
@@ -72,12 +73,16 @@ export default function NotificationsScreen() {
             );
 
             const unsubscribe = onSnapshot(q, (snap) => {
+                if (!isActive) return;
                 const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 setNotifications(data);
                 setLoading(false);
             });
 
-            return unsubscribe;
+            return () => {
+                isActive = false;
+                unsubscribe();
+            };
         }
     }, [user]);
 

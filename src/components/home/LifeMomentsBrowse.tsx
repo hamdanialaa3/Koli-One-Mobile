@@ -27,7 +27,7 @@ const MOMENTS: LifeMoment[] = [
     icon: <Users color="#ffffff" size={32} />,
     gradient: '#f97316',
     titleEn: 'Growing Family',
-    titleAr: 'عائلة متنامية',
+    titleAr: 'Растящо семейство',
     searchQuery: 'category=suv,van'
   },
   {
@@ -35,7 +35,7 @@ const MOMENTS: LifeMoment[] = [
     icon: <Briefcase color="#ffffff" size={32} />,
     gradient: '#3b82f6',
     titleEn: 'Daily Commute',
-    titleAr: 'التنقل اليومي',
+    titleAr: 'Ежедневно пътуване',
     searchQuery: 'fuelType=hybrid,diesel'
   },
   {
@@ -43,7 +43,7 @@ const MOMENTS: LifeMoment[] = [
     icon: <Mountain color="#ffffff" size={32} />,
     gradient: '#10b981',
     titleEn: 'Adventure',
-    titleAr: 'مغامرة',
+    titleAr: 'Приключение',
     searchQuery: 'driveType=4x4'
   },
   {
@@ -51,7 +51,7 @@ const MOMENTS: LifeMoment[] = [
     icon: <Leaf color="#ffffff" size={32} />,
     gradient: '#22c55e',
     titleEn: 'Eco-Friendly',
-    titleAr: 'صديقة للبيئة',
+    titleAr: 'Екологични',
     searchQuery: 'fuelType=electric,hybrid'
   },
   {
@@ -59,7 +59,7 @@ const MOMENTS: LifeMoment[] = [
     icon: <Building2 color="#ffffff" size={32} />,
     gradient: '#8b5cf6',
     titleEn: 'City Life',
-    titleAr: 'الحياة الحضرية',
+    titleAr: 'Градски живот',
     searchQuery: 'category=hatchback,compact'
   },
   {
@@ -67,7 +67,7 @@ const MOMENTS: LifeMoment[] = [
     icon: <Crown color="#ffffff" size={32} />,
     gradient: '#eab308',
     titleEn: 'Luxury',
-    titleAr: 'فخامة',
+    titleAr: 'Лукс',
     searchQuery: 'priceRange=50000-500000'
   }
 ];

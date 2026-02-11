@@ -19,7 +19,7 @@ export function useNotifications(userId?: string) {
 
         // 2. Foreground listener
         notificationListener.current = NotificationService.addNotificationReceivedListener(notification => {
-            console.log('Foreground notification:', notification);
+            // Foreground notifications are handled by the notification UI
         });
 
         // 3. Interaction listener

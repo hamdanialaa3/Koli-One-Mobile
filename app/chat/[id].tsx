@@ -116,46 +116,51 @@ export default function ChatScreen() {
     const flatListRef = useRef<FlatList>(null);
 
     useEffect(() => {
+        let isActive = true;
+        let unsubscribe: (() => void) | null = null;
+
+        const loadCarAndMessages = async () => {
+            let carId = id as string;
+            let activeChannelId = '';
+
+            if (carId.startsWith('msg_')) {
+                activeChannelId = carId;
+                const parts = carId.split('_car_');
+                if (parts.length > 1) {
+                    // Rely on the channel's car data if needed.
+                }
+            }
+
+            const carData = await ListingService.getListingById(carId);
+            if (!isActive) return;
+            setCar(carData);
+
+            if (carData && profile) {
+                const channelId = activeChannelId || MessagingService.generateChannelId(
+                    profile.numericId,
+                    carData.sellerNumericId || 0,
+                    carData.carNumericId || 0
+                );
+
+                unsubscribe = MessagingService.subscribeToMessages(channelId, (msgs) => {
+                    if (!isActive) return;
+                    setMessages(msgs);
+                    setLoading(false);
+                });
+            } else {
+                setLoading(false);
+            }
+        };
+
         if (id) {
             loadCarAndMessages();
         }
+
+        return () => {
+            isActive = false;
+            if (unsubscribe) unsubscribe();
+        };
     }, [id, profile]);
-
-    const loadCarAndMessages = async () => {
-        let carId = id as string;
-        let activeChannelId = '';
-
-        if (carId.startsWith('msg_')) {
-            activeChannelId = carId;
-            // Extract numeric carId from msg_u1_u2_car_N
-            const parts = carId.split('_car_');
-            if (parts.length > 1) {
-                // In a perfect world we'd fetch car by numericId, 
-                // but since our ListingService works by docId, 
-                // we'll rely on the channel's car data if needed.
-            }
-        }
-
-        const carData = await ListingService.getListingById(carId);
-        setCar(carData);
-
-        if (carData && profile) {
-            const channelId = activeChannelId || MessagingService.generateChannelId(
-                profile.numericId,
-                carData.sellerNumericId || 0,
-                carData.carNumericId || 0
-            );
-
-            const unsubscribe = MessagingService.subscribeToMessages(channelId, (msgs) => {
-                setMessages(msgs);
-                setLoading(false);
-            });
-
-            return () => unsubscribe();
-        } else {
-            setLoading(false);
-        }
-    };
 
     const handleSend = async () => {
         if (isOfferMode) {

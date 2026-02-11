@@ -181,23 +181,23 @@ class VinCheckService {
    */
   private validateVinFormat(vin: string): string | null {
     if (!vin || typeof vin !== 'string') {
-      return 'رقم الشاصي مطلوب';
+      return 'VIN номерът е задължителен';
     }
     
     const cleanVIN = vin.toUpperCase().replace(/\s/g, '');
     
     if (cleanVIN.length !== 17) {
-      return `رقم الشاصي يجب أن يحتوي على 17 حرفاً (Current: ${cleanVIN.length})`;
+      return `VIN номерът трябва да е 17 символа (Current: ${cleanVIN.length})`;
     }
     
     // Check for invalid characters (I, O, Q not allowed in VIN)
     if (/[IOQ]/.test(cleanVIN)) {
-      return 'رقم الشاصي لا يمكن أن يحتوي على الأحرف: I, O, Q';
+      return 'VIN номерът не може да съдържа буквите: I, O, Q';
     }
     
     // Only alphanumeric
     if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(cleanVIN)) {
-      return 'رقم الشاصي يحتوي على أحرف غير صحيحة';
+      return 'VIN номерът съдържа невалидни символи';
     }
     
     return null;
@@ -357,13 +357,13 @@ class VinCheckService {
     
     if (level === 'excellent' || level === 'good') {
       badge = '🟢 This car is clean';
-      badgeBG = '🟢 هذه السيارة نظيفة';
+      badgeBG = '🟢 Тази кола е чиста';
     } else if (historyInfo.hasAccidentHistory) {
       badge = '⚠️ Accident history';
-      badgeBG = '⚠️ تاريخ حوادث';
+      badgeBG = '⚠️ История на инциденти';
     } else {
       badge = '⚠️ Multiple owners';
-      badgeBG = '⚠️ عدة ملاك';
+      badgeBG = '⚠️ Няколко собственика';
     }
     
     // Generate recommendations
@@ -374,8 +374,8 @@ class VinCheckService {
     
     const recommendationBuyerBG = 
       level === 'excellent' || level === 'good'
-        ? 'موصى بالشراء. تاريخ جيد للسيارة.'
-        : 'توخي الحذر. راجع تفاصيل التاريخ بعناية.';
+        ? 'Препоръчителна покупка. Добра история на автомобила.'
+        : 'Бъдете внимателни. Прегледайте детайлите на историята внимателно.';
     
     return {
       overall: score,
@@ -413,7 +413,7 @@ class VinCheckService {
         overall: 0,
         level: 'poor',
         badge: '❌ Invalid VIN',
-        badgeBG: '❌ رقم شاصي غير صحيح',
+        badgeBG: '❌ Невалиден VIN',
         recommendationBuyer: error,
         recommendationBuyerBG: error,
       },
