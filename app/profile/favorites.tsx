@@ -9,6 +9,7 @@ import { SkeletonListingCard } from '../../src/components/skeleton/SkeletonListi
 import { theme } from '../../src/styles/theme';
 import { FlatList, RefreshControl } from 'react-native';
 import { CarCard } from '../../src/components/CarCard';
+import { logger } from '../../src/services/logger-service';
 
 const Container = styled.SafeAreaView`
   flex: 1;
@@ -59,7 +60,7 @@ export default function FavoritesScreen() {
             const ads = await ListingService.getListingsByIds(profile.favorites);
             setListings(ads);
         } catch (error) {
-            console.error("Error fetching favorites:", error);
+            logger.error("Error fetching favorites:", error);
         } finally {
             setLoading(false);
             setRefreshing(false);
@@ -78,7 +79,7 @@ export default function FavoritesScreen() {
     if (loading) {
         return (
             <Container theme={theme}>
-                <MobileHeader title="Favorites" showBack />
+                <MobileHeader title="Favorites" back />
                 <Content theme={theme}>
                     {[1, 2, 3].map((i) => <SkeletonListingCard key={i} />)}
                 </Content>
@@ -88,7 +89,7 @@ export default function FavoritesScreen() {
 
     return (
         <Container theme={theme}>
-            <MobileHeader title="Favorites" showBack />
+            <MobileHeader title="Favorites" back />
             <FlatList
                 data={listings}
                 keyExtractor={(item) => item.id}

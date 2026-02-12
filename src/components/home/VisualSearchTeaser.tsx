@@ -217,7 +217,7 @@ export default function VisualSearchTeaser() {
   return (
     <Container theme={theme}>
       <ContentWrapper>
-        <Badge>
+        <Badge colors={['#9333ea', '#3b82f6']}>
           <Sparkles color="#ffffff" size={14} />
           <BadgeText>NEW AI FEATURE</BadgeText>
         </Badge>

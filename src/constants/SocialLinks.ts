@@ -1,6 +1,6 @@
 /**
- * Social Links — Re-exported from @koli-one/shared.
- * @version 3.0.0 — Unified with shared/
+ * Social Links — Re-exported from shared.
+ * @version 3.0.0
  */
-export { SOCIAL_LINKS } from '@koli-one/shared';
-export type { SocialPlatform } from '@koli-one/shared';
+export { SOCIAL_LINKS } from '../shared';
+export type { SocialPlatform } from '../shared';

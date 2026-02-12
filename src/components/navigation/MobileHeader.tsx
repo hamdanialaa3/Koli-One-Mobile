@@ -68,7 +68,7 @@ export default function MobileHeader() {
     return (
         <HeaderContainer theme={theme}>
             <Content>
-                <LogoContainer onPress={() => router.push('/(tabs)/')}>
+                <LogoContainer onPress={() => router.push('/(tabs)/' as any)}>
                     <Ionicons name="car-sport" size={24} color={theme.colors.primary.main} style={{ marginRight: 8 }} />
                     <LogoText theme={theme}>Koli One</LogoText>
                 </LogoContainer>

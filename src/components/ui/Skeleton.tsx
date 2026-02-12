@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ViewStyle, DimensionValue } from 'react-native';
+import { ViewStyle } from 'react-native';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -12,13 +12,13 @@ import { theme } from '../../styles/theme';
 import styled from 'styled-components/native';
 
 interface SkeletonProps {
-    width?: DimensionValue;
-    height?: DimensionValue;
+    width?: number | string;
+    height?: number | string;
     borderRadius?: number;
     style?: ViewStyle;
 }
 
-const SkeletonContainer = styled(Animated.View) <{ width?: DimensionValue; height?: DimensionValue; borderRadius?: number }>`
+const SkeletonContainer = styled(Animated.View) <{ width?: number | string; height?: number | string; borderRadius?: number }>`
   background-color: ${theme.colors.background.dark};
   width: ${props => typeof props.width === 'number' ? `${props.width}px` : (props.width || '100%')};
   height: ${props => typeof props.height === 'number' ? `${props.height}px` : (props.height || '20px')};

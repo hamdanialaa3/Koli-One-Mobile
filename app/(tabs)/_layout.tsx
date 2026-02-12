@@ -70,7 +70,10 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="messages"
-        options={{ href: null }}
+        options={{
+          title: 'Messages',
+          tabBarIcon: ({ color }) => <TabBarIcon name="comments" color={color} />,
+        }}
       />
     </Tabs>
   );

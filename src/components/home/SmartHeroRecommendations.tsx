@@ -157,7 +157,7 @@ export default function SmartHeroRecommendations() {
                         </Title>
                         {/* Optional Dominant Brand Badge - Parity with Web */}
                         {isPersonalized && (
-                            <BrandBadge>
+                            <BrandBadge colors={['#FF8F10', '#FF6B00']}>
                                 <BrandText>BMW</BrandText>
                             </BrandBadge>
                         )}

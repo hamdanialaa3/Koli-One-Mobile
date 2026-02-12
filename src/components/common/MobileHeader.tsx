@@ -71,6 +71,7 @@ interface MobileHeaderProps {
     transparent?: boolean;
     dark?: boolean;
     back?: boolean;
+    rightComponent?: React.ReactNode;
 }
 
 export const MobileHeader: React.FC<MobileHeaderProps> = ({
@@ -78,7 +79,8 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
     title,
     transparent = false,
     dark = false,
-    back = false
+    back = false,
+    rightComponent
 }) => {
     const { user } = useAuth();
     const router = useRouter();
@@ -122,6 +124,7 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
                 )}
 
                 <RightIcons>
+                    {rightComponent}
                     <TouchableOpacity onPress={() => router.push('/notifications' as any)}>
                         <Ionicons name="notifications-outline" size={24} color={unreadCount > 0 ? theme.colors.secondary.main : iconColor} />
                         {unreadCount > 0 && (

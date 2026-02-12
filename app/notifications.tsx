@@ -77,6 +77,9 @@ export default function NotificationsScreen() {
                 const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 setNotifications(data);
                 setLoading(false);
+            }, (error) => {
+                if (!isActive) return;
+                setLoading(false);
             });
 
             return () => {
@@ -109,6 +112,15 @@ export default function NotificationsScreen() {
                 <FlatList
                     data={notifications}
                     keyExtractor={(item) => item.id}
+                    ListEmptyComponent={() => (
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 100 }}>
+                            <Ionicons name="notifications-off-outline" size={64} color={theme.colors.text.disabled} />
+                            <Title theme={theme} style={{ marginTop: 16, fontSize: 18 }}>No notifications yet</Title>
+                            <Message theme={theme} style={{ marginTop: 8, textAlign: 'center' as const, paddingLeft: 40, paddingRight: 40 }}>
+                                You'll be notified about price drops, messages, and updates here.
+                            </Message>
+                        </View>
+                    )}
                     renderItem={({ item }) => (
                         <NotificationItem
                             read={item.read}
@@ -121,7 +133,7 @@ export default function NotificationsScreen() {
                             <Content>
                                 <Title theme={theme}>{item.title}</Title>
                                 <Message theme={theme}>{item.message}</Message>
-                                <Time theme={theme}>{new Date(item.timestamp?.toDate()).toLocaleString()}</Time>
+                                <Time theme={theme}>{item.timestamp?.toDate ? new Date(item.timestamp.toDate()).toLocaleString() : ''}</Time>
                             </Content>
                             {!item.read && <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: theme.colors.primary.main }} />}
                         </NotificationItem>

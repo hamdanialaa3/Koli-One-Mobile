@@ -3,8 +3,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
@@ -13,7 +12,6 @@ import { theme } from '../src/styles/theme';
 import { AuthProvider, useAuth } from '../src/contexts/AuthContext';
 import { LanguageProvider } from '../src/contexts/LanguageContext';
 import { useNotifications } from '../src/hooks/useNotifications';
-import { ONBOARDING_STORAGE_KEY } from '../src/constants/onboarding';
 import { logger } from '../src/services/logger-service';
 
 export {
@@ -64,66 +62,61 @@ function RootLayoutNav() {
   const { user, loading } = useAuth();
   const segments = useSegments();
   const router = useRouter();
-  const [onboardingChecked, setOnboardingChecked] = useState(false);
 
   // Register push notifications
   useNotifications(user?.uid);
 
-  // Check if onboarding is completed
-  useEffect(() => {
-    const checkOnboarding = async () => {
-      try {
-        const onboardingData = await AsyncStorage.getItem(ONBOARDING_STORAGE_KEY);
-        
-        if (!onboardingData) {
-          // First time user - show onboarding
-          logger.info('First time user detected, showing onboarding');
-          router.replace('/onboarding');
-        } else {
-          logger.info('Onboarding already completed');
-        }
-      } catch (error) {
-        logger.error('Failed to check onboarding status', error);
-      } finally {
-        setOnboardingChecked(true);
-      }
-    };
-
-    // Only check once on app load
-    if (!onboardingChecked) {
-      checkOnboarding();
-    }
-  }, [onboardingChecked]);
-
   // Handle authentication-based navigation
   useEffect(() => {
-    if (loading || !onboardingChecked) return;
+    if (loading) return;
     
     const inAuthGroup = segments[0] === '(auth)';
-    const inOnboarding = segments[0] === 'onboarding';
-    
-    // Don't interfere with onboarding flow
-    if (inOnboarding) return;
     
     if (!user && !inAuthGroup) {
-      // User is not signed in and trying to access protected route
-      // Allow access to tabs but show login prompts when needed
+      // User is not signed in - allow access to tabs but show login prompts when needed
     } else if (user && inAuthGroup) {
       // User is signed in but on auth screen, redirect to tabs
       router.replace('/(tabs)');
     }
-  }, [user, loading, segments, onboardingChecked]);
+  }, [user, loading, segments]);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <StyledThemeProvider theme={theme}>
         <Stack>
-          <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+          <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-          <Stack.Screen name="car/[id]" options={{ presentation: 'card' }} />
-          <Stack.Screen name="notifications" options={{ title: 'Notifications' }} />
+          <Stack.Screen name="car/[id]" options={{ headerShown: false, presentation: 'card' }} />
+          <Stack.Screen name="chat/[id]" options={{ headerShown: false }} />
+          <Stack.Screen name="notifications" options={{ headerShown: false }} />
+          <Stack.Screen name="price-alerts" options={{ headerShown: false }} />
+          <Stack.Screen name="social" options={{ headerShown: false }} />
+          <Stack.Screen name="finance" options={{ headerShown: false }} />
+          <Stack.Screen name="dealers" options={{ headerShown: false }} />
+          <Stack.Screen name="saved-searches" options={{ headerShown: false }} />
+          <Stack.Screen name="my-reviews" options={{ headerShown: false }} />
+          <Stack.Screen name="privacy-policy" options={{ headerShown: false }} />
+          <Stack.Screen name="terms-of-service" options={{ headerShown: false }} />
+          <Stack.Screen name="VisualSearch" options={{ headerShown: false }} />
+          <Stack.Screen name="profile/[id]" options={{ headerShown: false }} />
+          <Stack.Screen name="profile/edit" options={{ headerShown: false }} />
+          <Stack.Screen name="profile/settings" options={{ headerShown: false }} />
+          <Stack.Screen name="profile/my-ads" options={{ headerShown: false }} />
+          <Stack.Screen name="profile/favorites" options={{ headerShown: false }} />
+          <Stack.Screen name="profile/drafts" options={{ headerShown: false }} />
+          <Stack.Screen name="profile/dashboard" options={{ headerShown: false }} />
+          <Stack.Screen name="profile/analytics" options={{ headerShown: false }} />
+          <Stack.Screen name="profile/campaigns" options={{ headerShown: false }} />
+          <Stack.Screen name="profile/consultations" options={{ headerShown: false }} />
+          <Stack.Screen name="profile/saved-searches" options={{ headerShown: false }} />
+          <Stack.Screen name="profile/users" options={{ headerShown: false }} />
+          <Stack.Screen name="profile/edit-listing/[id]" options={{ headerShown: false }} />
+          <Stack.Screen name="about" options={{ headerShown: false }} />
+          <Stack.Screen name="contact" options={{ headerShown: false }} />
+          <Stack.Screen name="help" options={{ headerShown: false }} />
+          <Stack.Screen name="data-deletion" options={{ headerShown: false }} />
         </Stack>
       </StyledThemeProvider>
     </ThemeProvider>

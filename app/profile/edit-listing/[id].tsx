@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
+import { logger } from '../../../src/services/logger-service';
 import {
     View,
     Text,
@@ -129,7 +130,7 @@ export default function EditListingScreen() {
                 { text: "OK", onPress: () => router.back() }
             ]);
         } catch (error) {
-            console.error(error);
+            logger.error('Failed to update listing', error);
             Alert.alert("Error", "Failed to update listing");
         } finally {
             setSaving(false);

@@ -13,6 +13,7 @@ import { SOCIAL_LINKS } from '../../src/constants/SocialLinks';
 import { useRouter } from 'expo-router';
 import { GoogleLoginButton } from '../../src/components/auth/GoogleLoginButton';
 import { FacebookLoginButton } from '../../src/components/auth/FacebookLoginButton';
+import { logger } from '../../src/services/logger-service';
 
 const Container = styled.SafeAreaView`
   flex: 1;
@@ -291,7 +292,7 @@ export default function ProfileScreen() {
         }
       }
     } catch (error: any) {
-      console.error("Login Error:", error);
+      logger.error("Login Error:", error);
       Alert.alert("Login Failed", error.message);
     }
   };
@@ -307,7 +308,7 @@ export default function ProfileScreen() {
         Alert.alert("Social Login", "Facebook Login on mobile is being updated for maximum security.");
       }
     } catch (error: any) {
-      console.error("Facebook Login Error:", error);
+      logger.error("Facebook Login Error:", error);
       Alert.alert("Login Failed", error.message);
     }
   };
@@ -338,6 +339,8 @@ export default function ProfileScreen() {
       items: [
         { label: 'User Directory', icon: 'people-circle-outline', route: '/profile/users' },
         { label: 'Settings', icon: 'settings-outline', route: '/profile/settings' },
+        { label: 'Help & Support', icon: 'help-circle-outline', route: '/help' },
+        { label: 'About Koli One', icon: 'information-circle-outline', route: '/about' },
       ]
     }
   ];
@@ -471,7 +474,7 @@ export default function ProfileScreen() {
           </StatLabel>
         </SocialSection>
 
-        <View style={{ height: '20px' as any }} />
+        <View style={{ height: 20 }} />
       </ScrollView>
 
     </Container>

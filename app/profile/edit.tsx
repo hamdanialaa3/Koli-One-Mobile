@@ -17,6 +17,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
+import { logger } from '../../src/services/logger-service';
 
 const Container = styled.SafeAreaView`
   flex: 1;
@@ -178,7 +179,7 @@ export default function EditProfileScreen() {
             Alert.alert("Success", "Profile updated successfully!");
             router.back();
         } catch (error) {
-            console.error("Update Error:", error);
+            logger.error("Update Error:", error);
             Alert.alert("Error", "Failed to update profile. Please try again.");
         } finally {
             setLoading(false);

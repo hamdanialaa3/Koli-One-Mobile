@@ -9,6 +9,7 @@ import { ListingService } from '../../src/services/ListingService';
 import { getUserProfile } from '../../src/services/userService';
 import { CarCard } from '../../src/components/CarCard';
 import { useAuth } from '../../src/contexts/AuthContext';
+import { logger } from '../../src/services/logger-service';
 
 const Container = styled.SafeAreaView`
   flex: 1;
@@ -168,7 +169,7 @@ export default function PublicProfileScreen() {
                 const userListings = await ListingService.getUserListings(id as string);
                 setListings(userListings);
             } catch (error) {
-                console.error('Error fetching public profile:', error);
+                logger.error('Error fetching public profile', error);
             } finally {
                 setLoading(false);
             }
@@ -184,7 +185,7 @@ export default function PublicProfileScreen() {
                 url: `https://koli.one/profile/${id}`,
             });
         } catch (error) {
-            console.error('Error sharing profile:', error);
+            logger.error('Error sharing profile', error);
         }
     };
 

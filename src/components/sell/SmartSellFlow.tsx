@@ -145,7 +145,7 @@ export const SmartSellFlow: React.FC<SmartSellFlowProps> = ({ visible, onClose }
       <Image source={{ uri: capturedPhoto?.uri }} style={{ width: '100%', height: 250, borderRadius: 16, marginBottom: 24 }} />
       
       <SuccessBadge theme={theme}>
-        <Ionicons name="checkmark-circle" size={32} color={theme.colors.success} />
+        <Ionicons name="checkmark-circle" size={32} color={theme.colors.status.success} />
         <SuccessText theme={theme}>
           {isBG ? 'Автомобилът е разпознат!' : 'Car Recognized!'}
         </SuccessText>
@@ -221,7 +221,7 @@ export const SmartSellFlow: React.FC<SmartSellFlowProps> = ({ visible, onClose }
       )}
       
       <ErrorIcon theme={theme}>
-        <Ionicons name="alert-circle" size={64} color={theme.colors.error} />
+        <Ionicons name="alert-circle" size={64} color={theme.colors.status.error} />
       </ErrorIcon>
       
       <ErrorTitle theme={theme}>{isBG ? 'Анализът не успя' : 'Analysis Failed'}</ErrorTitle>

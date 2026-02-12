@@ -118,7 +118,7 @@ export default function AIInsights() {
 
     return (
         <Container theme={theme}>
-            <GlassOverlay />
+            <GlassOverlay colors={['rgba(37, 99, 235, 0.1)', 'transparent']} />
             <Header>
                 <Title theme={theme}>AI Insights</Title>
                 <Badge theme={theme}>

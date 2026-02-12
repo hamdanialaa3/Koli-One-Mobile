@@ -36,7 +36,7 @@ export class ListingService {
         try {
             return await promise;
         } catch (error) {
-            logger.warn(`Error in ${operation}`, error);
+            logger.warn(`Error in ${operation}`, { error });
             // TODO: Log to analytics/crashlytics here
             return fallback;
         }
@@ -292,8 +292,8 @@ export class ListingService {
             const constraints = UnifiedFilterEngine.buildSearchQuery(filters);
             const sortConstraints = UnifiedFilterEngine.buildSortQuery(filters.sort);
 
-            const targetCollections = filters.category
-                ? [this.mapCategoryToCollection(filters.category)]
+            const targetCollections = filters.bodyType
+                ? [this.mapCategoryToCollection(filters.bodyType)]
                 : ['passenger_cars', 'cars', 'suvs'];
 
             const promises = targetCollections.map(async (collectionName) => {

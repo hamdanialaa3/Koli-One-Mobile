@@ -49,7 +49,7 @@ export const useMobileSearch = (initialFilters: FilterState = {}) => {
                 if (filters.model) algoliaFilters.push(`model:"${filters.model}"`);
                 if (filters.fuelType) algoliaFilters.push(`fuelType:"${filters.fuelType}"`);
                 if (filters.transmission) algoliaFilters.push(`transmission:"${filters.transmission}"`);
-                if (filters.city) algoliaFilters.push(`city:"${filters.city}"`);
+                if (filters.location) algoliaFilters.push(`city:"${filters.location}"`);
                 
                 const numericFilters: string[] = [];
                 if (filters.priceMin !== undefined) numericFilters.push(`price >= ${filters.priceMin}`);

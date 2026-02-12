@@ -125,7 +125,7 @@ const CTAText = styled.Text`
 
 export default function AIAnalysisBanner() {
   return (
-    <Container>
+    <Container colors={['#8b5cf6', '#6366f1']}>
       <Header>
         <IconBadge>
           <Sparkles color="#ffffff" size={28} />

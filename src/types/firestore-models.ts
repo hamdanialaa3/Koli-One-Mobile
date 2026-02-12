@@ -7,14 +7,14 @@ export type {
   SubscriptionTier,
   BaseDocument,
   UserBase,
-} from '@koli-one/shared';
+} from '../shared';
 
 // Re-export local types that are mobile-specific
 export type { BulgarianUser } from './user/bulgarian-user.types';
 export type { DealershipInfo } from './dealership/dealership.types';
 
 // Backward compat: Car extends BaseDocument (simplified for mobile)
-import type { BaseDocument } from '@koli-one/shared';
+import type { BaseDocument } from '../shared';
 export interface Car extends BaseDocument {
   make: string;
   model: string;

@@ -21,6 +21,7 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth } from '../../src/services/firebase';
 import { createUserProfile } from '../../src/services/userService';
 import { theme } from '../../src/styles/theme';
+import { logger } from '../../src/services/logger-service';
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -76,7 +77,7 @@ export default function RegisterScreen() {
       // Navigate to main app
       router.replace('/(tabs)');
     } catch (err: any) {
-      console.error('Registration error:', err);
+      logger.error('Registration error:', err);
       switch (err.code) {
         case 'auth/email-already-in-use':
           setError('Този имейл вече се използва');

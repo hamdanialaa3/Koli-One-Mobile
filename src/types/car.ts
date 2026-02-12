@@ -1,6 +1,6 @@
 /**
- * Car summary types — Re-exported from @koli-one/shared.
- * @version 3.0.0 — Unified with shared/
+ * Car summary types — Re-exported from shared.
+ * @version 3.0.0
  */
-export type { FuelType, TransmissionType } from '@koli-one/shared';
-export type { CarSummary } from '@koli-one/shared';
+export type { FuelType, TransmissionType } from '../shared';
+export type { CarSummary } from '../shared';

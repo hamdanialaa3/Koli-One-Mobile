@@ -8,7 +8,7 @@ export type {
   FeatureKey,
   AIUsageLog,
   AITierConfig,
-} from '@koli-one/shared';
+} from '../shared';
 
 // Mobile-specific: Subscription plan display
 export interface SubscriptionPlan {

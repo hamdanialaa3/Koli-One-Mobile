@@ -16,8 +16,9 @@ import { theme } from '../../src/styles/theme';
 import { MessagingService, RealtimeMessage } from '../../src/services/MessagingService';
 import { useAuth } from '../../src/contexts/AuthContext';
 import { ListingService } from '../../src/services/ListingService';
-import { CarListing } from '../../src/types/CarListing';
+import { ListingBase } from '../../src/types/ListingBase';
 import { QuickReplies } from '../../src/components/messaging/QuickReplies';
+import { logger } from '../../src/services/logger-service';
 import { OfferBubble } from '../../src/components/messaging/OfferBubble';
 
 const Container = styled.SafeAreaView`
@@ -109,7 +110,7 @@ export default function ChatScreen() {
     const router = useRouter();
     const [messages, setMessages] = useState<RealtimeMessage[]>([]);
     const [inputText, setInputText] = useState('');
-    const [car, setCar] = useState<CarListing | null>(null);
+    const [car, setCar] = useState<ListingBase | null>(null);
     const [loading, setLoading] = useState(true);
     const [isOfferMode, setIsOfferMode] = useState(false);
     const [offerAmount, setOfferAmount] = useState('');
@@ -137,7 +138,7 @@ export default function ChatScreen() {
 
             if (carData && profile) {
                 const channelId = activeChannelId || MessagingService.generateChannelId(
-                    profile.numericId,
+                    profile.numericId ?? 0,
                     carData.sellerNumericId || 0,
                     carData.carNumericId || 0
                 );
@@ -171,7 +172,7 @@ export default function ChatScreen() {
         if (!inputText.trim() || !car || !profile || !user) return;
 
         const channelId = MessagingService.generateChannelId(
-            profile.numericId,
+            profile.numericId ?? 0,
             car.sellerNumericId || 0,
             car.carNumericId || 0
         );
@@ -179,7 +180,7 @@ export default function ChatScreen() {
         const msg: Partial<RealtimeMessage> = {
             senderId: profile.numericId,
             senderFirebaseId: user.uid,
-            recipientId: car.sellerNumericId,
+            recipientId: car.sellerNumericId ?? 0,
             recipientFirebaseId: car.sellerId,
             content: inputText.trim(),
             type: 'text'
@@ -190,7 +191,7 @@ export default function ChatScreen() {
         try {
             await MessagingService.sendMessage(channelId, msg);
         } catch (e) {
-            console.error(e);
+            logger.error('Failed to send message', e);
         }
     };
 
@@ -198,7 +199,7 @@ export default function ChatScreen() {
         if (!offerAmount.trim() || !car || !profile || !user) return;
 
         const channelId = MessagingService.generateChannelId(
-            profile.numericId,
+            profile.numericId ?? 0,
             car.sellerNumericId || 0,
             car.carNumericId || 0
         );
@@ -206,7 +207,7 @@ export default function ChatScreen() {
         const msg: Partial<RealtimeMessage> = {
             senderId: profile.numericId,
             senderFirebaseId: user.uid,
-            recipientId: car.sellerNumericId,
+            recipientId: car.sellerNumericId ?? 0,
             recipientFirebaseId: car.sellerId,
             content: `OFFER:${offerAmount}`,
             type: 'offer'
@@ -218,7 +219,7 @@ export default function ChatScreen() {
         try {
             await MessagingService.sendMessage(channelId, msg);
         } catch (e) {
-            console.error(e);
+            logger.error('Failed to send offer', e);
         }
     };
 
@@ -260,8 +261,7 @@ export default function ChatScreen() {
                         return (
                             <OfferBubble
                                 message={item}
-                                isMe={isMe}
-                                time={time}
+                                isOwnMessage={isMe}
                             />
                         );
                     }
@@ -291,7 +291,7 @@ export default function ChatScreen() {
                         <Ionicons 
                             name={isOfferMode ? "close-circle" : "pricetag"} 
                             size={28} 
-                            color={isOfferMode ? theme.colors.error.main : theme.colors.primary.main} 
+                            color={isOfferMode ? theme.colors.status.error : theme.colors.primary.main} 
                         />
                     </TouchableOpacity>
                     

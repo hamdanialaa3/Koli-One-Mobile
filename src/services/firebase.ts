@@ -10,24 +10,18 @@ import { Platform } from 'react-native';
 import { logger } from './logger-service';
 
 // Koli One Firebase Configuration
-const validateFirebaseConfig = () => {
-  const apiKey = process.env.FIREBASE_API_KEY || process.env.REACT_APP_FIREBASE_API_KEY;
-  if (!apiKey) {
-    throw new Error('FIREBASE_API_KEY environment variable is not set. Please configure it in your .env file.');
-  }
-  return {
-    apiKey,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN || "fire-new-globul.firebaseapp.com",
-    projectId: process.env.FIREBASE_PROJECT_ID || "fire-new-globul",
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET || "fire-new-globul.firebasestorage.app",
-    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || "973379297533",
-    appId: process.env.FIREBASE_APP_ID || "1:973379297533:web:59c6534d61a29cae5d9e94",
-    measurementId: process.env.FIREBASE_MEASUREMENT_ID || "G-TDRZ4Z3D7Z",
-    databaseURL: process.env.FIREBASE_DATABASE_URL || "https://fire-new-globul-default-rtdb.europe-west1.firebasedatabase.app"
-  };
+// Firebase API keys are NOT secret — they are designed for client-side use.
+// Security is enforced via Firebase Security Rules, not by hiding the key.
+const firebaseConfig = {
+  apiKey: "AIzaSyAUYM_qygK5pUrlXtdDLmEi-_Kh9SyvRmk",
+  authDomain: "fire-new-globul.firebaseapp.com",
+  projectId: "fire-new-globul",
+  storageBucket: "fire-new-globul.firebasestorage.app",
+  messagingSenderId: "973379297533",
+  appId: "1:973379297533:web:59c6534d61a29cae5d9e94",
+  measurementId: "G-TDRZ4Z3D7Z",
+  databaseURL: "https://fire-new-globul-default-rtdb.europe-west1.firebasedatabase.app"
 };
-
-const firebaseConfig = validateFirebaseConfig();
 
 // Initialize variables
 let app: FirebaseApp;

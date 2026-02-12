@@ -77,9 +77,9 @@ const ErrorContainer = styled.View`
 
 const ErrorIcon = styled(Ionicons).attrs({
   name: 'alert-circle-outline',
-  size: 48
+  size: 48,
+  color: theme.colors.status.error,
 })`
-  color: ${props => props.theme.colors.status.error};
   margin-bottom: 12px;
 `;
 
@@ -285,7 +285,7 @@ export const PriceEstimatorCard: React.FC<Props> = ({ carData, currency = '€' 
         </LoadingContainer>
       ) : error ? (
         <ErrorContainer>
-          <ErrorIcon theme={theme} />
+          <ErrorIcon name="alert-circle-outline" />
           <ErrorTitle theme={theme}>Грешка</ErrorTitle>
           <ErrorText theme={theme}>{error}</ErrorText>
         </ErrorContainer>

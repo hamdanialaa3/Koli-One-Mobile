@@ -19,6 +19,7 @@ import { ListingService } from '../../src/services/ListingService';
 import { PlatformSyncService } from '../../src/services/PlatformSyncService';
 import { CarListing } from '../../src/types/CarListing';
 import { useAuth } from '../../src/contexts/AuthContext';
+import { logger } from '../../src/services/logger-service';
 import { AnimatedImage } from '../../src/components/ui/AnimatedImage';
 import { AnimatedButton } from '../../src/components/ui/AnimatedButton';
 // import { PriceRating } from '../../src/components/car-details/PriceRating'; // REMOVED
@@ -149,6 +150,7 @@ export default function CarDetailsScreen() {
   const router = useRouter();
   const [car, setCar] = useState<CarListing | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [isFav, setIsFav] = useState(false);
 
   useEffect(() => {
@@ -159,13 +161,19 @@ export default function CarDetailsScreen() {
   }, [id]);
 
   const fetchCar = async () => {
-    const data = await ListingService.getListingById(id as string);
-    setCar(data as any);
-    if (data && id) {
-      const favStatus = await PlatformSyncService.isFavorite(id as string);
-      setIsFav(favStatus);
+    try {
+      const data = await ListingService.getListingById(id as string);
+      setCar(data as any);
+      if (data && id) {
+        const favStatus = await PlatformSyncService.isFavorite(id as string);
+        setIsFav(favStatus);
+      }
+    } catch (e) {
+      logger.error('Failed to fetch car details', e);
+      setError(true);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleToggleFavorite = async () => {
@@ -179,7 +187,7 @@ export default function CarDetailsScreen() {
       const newStatus = await PlatformSyncService.toggleFavorite(car);
       setIsFav(newStatus);
     } catch (e) {
-      console.error(e);
+      logger.error('Failed to toggle favorite', e);
     }
   };
 
@@ -204,7 +212,18 @@ export default function CarDetailsScreen() {
     </Container>
   );
 
-  if (!car) return <Container theme={theme}><Title>Car not found</Title></Container>;
+  if (error || !car) return (
+    <Container theme={theme} style={{ justifyContent: 'center', alignItems: 'center', padding: 40 }}>
+      <Ionicons name="alert-circle-outline" size={64} color={theme.colors.text.disabled} />
+      <Title style={{ textAlign: 'center', marginTop: 16 }}>{error ? 'Failed to load car details' : 'Car not found'}</Title>
+      <TouchableOpacity
+        onPress={() => error ? fetchCar() : router.back()}
+        style={{ marginTop: 20, paddingVertical: 12, paddingHorizontal: 32, borderRadius: 12, backgroundColor: theme.colors.primary.main }}
+      >
+        <ActionButtonText light>{error ? 'Retry' : 'Go Back'}</ActionButtonText>
+      </TouchableOpacity>
+    </Container>
+  );
 
   return (
     <Container theme={theme}>

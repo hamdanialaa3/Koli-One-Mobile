@@ -32,7 +32,7 @@ interface AlgoliaSearchResult {
 class AlgoliaSearchService {
   private static instance: AlgoliaSearchService;
   private client: any;
-  private index: any;
+  private indexName: string = 'cars';
   private isInitialized = false;
 
   private constructor() {
@@ -40,14 +40,13 @@ class AlgoliaSearchService {
     const extra = Constants.expoConfig?.extra;
     const appId = extra?.algoliaAppId;
     const searchApiKey = extra?.algoliaSearchApiKey;
-    const indexName = extra?.algoliaIndexName || 'cars';
+    this.indexName = extra?.algoliaIndexName || 'cars';
 
-    if (appId && searchApiKey) {
+    if (appId && searchApiKey && appId !== 'REPLACE_WITH_ALGOLIA_APP_ID') {
       try {
         this.client = algoliasearch(appId, searchApiKey);
-        this.index = this.client.initIndex(indexName);
         this.isInitialized = true;
-        logger.info('✅ Algolia initialized', { indexName });
+        logger.info('✅ Algolia initialized', { indexName: this.indexName });
       } catch (error) {
         logger.error('❌ Algolia initialization failed', error as Error);
       }
@@ -104,9 +103,12 @@ class AlgoliaSearchService {
         searchParams.numericFilters = params.numericFilters;
       }
 
-      const result = await this.index.search(params.query, searchParams);
+      const result = await this.client.searchSingleIndex({
+        indexName: this.indexName,
+        searchParams: { ...searchParams, query: params.query }
+      });
 
-      const cars = result.hits.map((hit: any) => ({
+      const cars = (result.hits || []).map((hit: any) => ({
         id: hit.objectID,
         ...hit,
         _highlightResult: undefined // Remove Algolia metadata
@@ -120,8 +122,8 @@ class AlgoliaSearchService {
 
       return {
         cars,
-        totalHits: result.nbHits,
-        processingTime: result.processingTimeMS,
+        totalHits: result.nbHits || 0,
+        processingTime: result.processingTimeMS || 0,
         facets: result.facets
       };
 
@@ -143,10 +145,14 @@ class AlgoliaSearchService {
     }
 
     try {
-      const result = await this.index.search(query, {
-        hitsPerPage: maxResults,
-        attributesToRetrieve: ['make', 'model'],
-        distinct: true
+      const result = await this.client.searchSingleIndex({
+        indexName: this.indexName,
+        searchParams: {
+          query,
+          hitsPerPage: maxResults,
+          attributesToRetrieve: ['make', 'model'],
+          distinct: true
+        }
       });
 
       const makes = new Set<string>();
@@ -180,9 +186,13 @@ class AlgoliaSearchService {
     }
 
     try {
-      const result = await this.index.search(query, {
-        facets: facetNames,
-        hitsPerPage: 0 // We only want facets
+      const result = await this.client.searchSingleIndex({
+        indexName: this.indexName,
+        searchParams: {
+          query,
+          facets: facetNames,
+          hitsPerPage: 0 // We only want facets
+        }
       });
 
       return result.facets || {};
@@ -207,10 +217,14 @@ class AlgoliaSearchService {
     }
 
     try {
-      const result = await this.index.search(query, {
-        aroundLatLng: `${latitude},${longitude}`,
-        aroundRadius: radiusMeters,
-        hitsPerPage: 50
+      const result = await this.client.searchSingleIndex({
+        indexName: this.indexName,
+        searchParams: {
+          query,
+          aroundLatLng: `${latitude},${longitude}`,
+          aroundRadius: radiusMeters,
+          hitsPerPage: 50
+        }
       });
 
       return {
@@ -235,7 +249,10 @@ class AlgoliaSearchService {
 
     try {
       const filters = `carNumericId:${carNumericId} AND sellerNumericId:${sellerNumericId}`;
-      const result = await this.index.search('', { filters, hitsPerPage: 1 });
+      const result = await this.client.searchSingleIndex({
+        indexName: this.indexName,
+        searchParams: { query: '', filters, hitsPerPage: 1 }
+      });
 
       if (result.hits.length > 0) {
         return result.hits[0];

@@ -10,6 +10,7 @@ import { FlatList, RefreshControl, View, Text, TouchableOpacity } from 'react-na
 import { Ionicons } from '@expo/vector-icons';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../src/services/firebase';
+import { logger } from '../../src/services/logger-service';
 
 const Container = styled.SafeAreaView`
   flex: 1;
@@ -95,7 +96,7 @@ export default function DraftsScreen() {
             }
             setDrafts(allDrafts);
         } catch (error) {
-            console.error("Error fetching drafts:", error);
+            logger.error("Error fetching drafts:", error);
         } finally {
             setLoading(false);
             setRefreshing(false);

@@ -20,7 +20,7 @@ export type {
   CarStory,
   CarListingFilters,
   CarListingSearchResult,
-} from '@koli-one/shared';
+} from '../shared';
 
 // ── Mobile-specific extensions ──────────────────────────────
 

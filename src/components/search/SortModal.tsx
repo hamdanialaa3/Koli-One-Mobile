@@ -46,7 +46,7 @@ const OptionText = styled.Text<{ active?: boolean }>`
   color: ${props => props.active ? props.theme.colors.primary.main : props.theme.colors.text.primary};
 `;
 
-export type SortType = 'recent' | 'price_asc' | 'price_desc' | 'year_desc' | 'year_asc';
+export type SortType = 'recent' | 'price_asc' | 'price_desc' | 'year_desc' | 'year_asc' | 'mileage_asc';
 
 interface SortModalProps {
     visible: boolean;
@@ -62,6 +62,7 @@ export const SORT_OPTIONS: { label: string, value: SortType }[] = [
     { label: 'Price: High to Low', value: 'price_desc' },
     { label: 'Year: Newest First', value: 'year_desc' },
     { label: 'Year: Oldest First', value: 'year_asc' },
+    { label: 'Mileage: Low to High', value: 'mileage_asc' },
 ];
 
 export const SortModal: React.FC<SortModalProps> = ({ visible, onClose, currentSort, onSelect, theme }) => {

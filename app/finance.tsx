@@ -97,10 +97,13 @@ export default function FinanceScreen() {
         const r = parseFloat(rate) / 100 / 12;
         const n = parseInt(term);
 
-        if (p <= 0 || r <= 0 || n <= 0) return 0;
+        if (isNaN(p) || isNaN(r) || isNaN(n) || p <= 0 || n <= 0) return '0.00';
+
+        // Handle 0% interest rate (simple division)
+        if (r === 0) return (p / n).toFixed(2);
 
         const payment = (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
-        return payment.toFixed(2);
+        return isFinite(payment) ? payment.toFixed(2) : '0.00';
     };
 
     return (

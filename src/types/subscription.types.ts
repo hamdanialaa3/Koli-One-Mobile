@@ -6,7 +6,7 @@
  * SubscriptionPlan stays local (mobile billing UI only).
  */
 
-export type { AIQuota, FeatureKey } from '@koli-one/shared';
+export type { AIQuota, FeatureKey } from '../shared';
 
 /** Mobile-specific subscription plan for billing UI */
 export interface SubscriptionPlan {

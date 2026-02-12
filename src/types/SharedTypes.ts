@@ -10,12 +10,12 @@ export type {
   AccountType,
   SubscriptionTier,
   UserBase as User,
-} from '@koli-one/shared';
+} from '../shared';
 
 export type {
   VehicleStatus,
   VehicleCollectionName,
   CarListing,
-} from '@koli-one/shared';
+} from '../shared';
 
-export { getCollectionName } from '@koli-one/shared';
+export { getCollectionName } from '../shared';

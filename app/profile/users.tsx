@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { db } from '../../src/services/firebase';
+import { logger } from '../../src/services/logger-service';
 
 const Container = styled.SafeAreaView`
   flex: 1;
@@ -109,7 +110,7 @@ export default function UsersDirectoryScreen() {
             const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             setUsers(data);
         } catch (error) {
-            console.error("Error fetching users:", error);
+            logger.error("Error fetching users:", error);
         } finally {
             setLoading(false);
         }

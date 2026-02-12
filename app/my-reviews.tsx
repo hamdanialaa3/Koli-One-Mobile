@@ -8,6 +8,7 @@ import MobileHeader from '../src/components/common/MobileHeader';
 import ReviewsList from '../src/components/reviews/ReviewsList';
 import { ReviewService, ReviewStats } from '../src/services/ReviewService';
 import { theme } from '../src/styles/theme';
+import { logger } from '../src/services/logger-service';
 
 const Container = styled.SafeAreaView`
   flex: 1;
@@ -190,7 +191,7 @@ export default function MyReviewsScreen() {
       const data = await ReviewService.getSellerStats(user.uid);
       setStats(data);
     } catch (error) {
-      console.error('Failed to load review stats:', error);
+      logger.error('Failed to load review stats:', error);
       Alert.alert('Грешка', 'Неуспешно зареждане на статистика за отзиви');
     } finally {
       setLoading(false);
@@ -283,7 +284,7 @@ export default function MyReviewsScreen() {
               <DistributionSection>
                 <DistributionTitle theme={theme}>Разпределение на оценките</DistributionTitle>
                 {[5, 4, 3, 2, 1].map(rating => {
-                  const count = stats.distribution[rating] || 0;
+                  const count = stats.ratingDistribution[rating as keyof typeof stats.ratingDistribution] || 0;
                   const percentage = stats.totalReviews > 0 
                     ? ((count / stats.totalReviews) * 100).toFixed(0) 
                     : '0';

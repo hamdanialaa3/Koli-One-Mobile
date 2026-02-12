@@ -4,7 +4,7 @@ import MapView, { Marker, Callout } from '../../src/components/common/MapViewWra
 import { View, Dimensions, StyleSheet, ActivityIndicator } from 'react-native';
 import { theme } from '../../src/styles/theme';
 import { ListingService } from '../../src/services/ListingService';
-import { CarListing } from '../../src/types/CarListing';
+import { ListingBase } from '../../src/types/ListingBase';
 import MobileHeader from '../../src/components/common/MobileHeader';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -50,7 +50,7 @@ const MarkerText = styled.Text`
 `;
 
 export default function MapScreen() {
-  const [listings, setListings] = useState<CarListing[]>([]);
+  const [listings, setListings] = useState<ListingBase[]>([]);
   const [loading, setLoading] = useState(true);
 
   const SofiaRegion = {
@@ -66,15 +66,20 @@ export default function MapScreen() {
 
   const fetchListings = async () => {
     setLoading(true);
-    const data = await ListingService.getListings();
-    // Add random coordinates for demo if not present (real production would have lat/lng)
-    const withCoords = data.map(item => ({
-      ...item,
-      latitude: item.latitude || 42.6977 + (Math.random() - 0.5) * 0.1,
-      longitude: item.longitude || 23.3219 + (Math.random() - 0.5) * 0.1,
-    }));
-    setListings(withCoords);
-    setLoading(false);
+    try {
+      const data = await ListingService.getListings();
+      // Only show listings that have real coordinates
+      const withCoords = data.filter(item => 
+        item.coordinates?.lat && item.coordinates?.lng && 
+        typeof item.coordinates.lat === 'number' && 
+        typeof item.coordinates.lng === 'number'
+      );
+      setListings(withCoords);
+    } catch (error) {
+      // Silently handle - map will show empty
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -94,8 +99,8 @@ export default function MapScreen() {
             <Marker
               key={car.id}
               coordinate={{
-                latitude: car.latitude!,
-                longitude: car.longitude!
+                latitude: car.coordinates!.lat,
+                longitude: car.coordinates!.lng
               }}
             >
               <CustomMarker theme={theme}>

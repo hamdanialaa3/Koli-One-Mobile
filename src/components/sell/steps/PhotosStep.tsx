@@ -50,7 +50,7 @@ const PhotoItem = styled.View`
   border-radius: 12px;
   overflow: hidden;
   position: relative;
-  background-color: ${props => props.theme.colors.background.subtle};
+  background-color: ${({ theme }: any) => theme.colors.background.subtle || '#F0F2F5'};
 `;
 
 const PreviewImage = styled.Image`

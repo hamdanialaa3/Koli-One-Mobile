@@ -10,6 +10,7 @@ import { theme } from '../../src/styles/theme';
 import { FlatList, RefreshControl, Alert } from 'react-native';
 import { CarCard } from '../../src/components/CarCard';
 import { Ionicons } from '@expo/vector-icons';
+import { logger } from '../../src/services/logger-service';
 
 const Container = styled.SafeAreaView`
   flex: 1;
@@ -85,7 +86,7 @@ export default function MyAdsScreen() {
             const ads = await ListingService.getUserListings(user.uid);
             setListings(ads);
         } catch (error) {
-            console.error("Error fetching my ads:", error);
+            logger.error("Error fetching my ads:", error);
         } finally {
             setLoading(false);
             setRefreshing(false);
@@ -133,7 +134,7 @@ export default function MyAdsScreen() {
 
     return (
         <Container theme={theme}>
-            <MobileHeader title="My Listings" showBack />
+            <MobileHeader title="My Listings" back />
             <FlatList
                 data={listings}
                 keyExtractor={(item) => item.id}

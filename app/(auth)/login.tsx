@@ -20,11 +20,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import {
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
   GoogleAuthProvider,
   signInWithCredential,
 } from 'firebase/auth';
 import { auth } from '../../src/services/firebase';
 import { theme } from '../../src/styles/theme';
+import { logger } from '../../src/services/logger-service';
 
 // Google Sign-In (if available)
 let GoogleSignin: any = null;
@@ -37,7 +39,7 @@ try {
     offlineAccess: true,
   });
 } catch (e) {
-  console.log('Google Sign-In not available in Expo Go');
+  logger.info('Google Sign-In not available in Expo Go');
 }
 
 export default function LoginScreen() {
@@ -61,7 +63,7 @@ export default function LoginScreen() {
       await signInWithEmailAndPassword(auth, email, password);
       router.replace('/(tabs)');
     } catch (err: any) {
-      console.error('Login error:', err);
+      logger.error('Login error:', err);
       switch (err.code) {
         case 'auth/invalid-email':
           setError('Невалиден имейл адрес');
@@ -105,12 +107,43 @@ export default function LoginScreen() {
       await signInWithCredential(auth, googleCredential);
       router.replace('/(tabs)');
     } catch (err: any) {
-      console.error('Google Sign-In error:', err);
+      logger.error('Google Sign-In error:', err);
       if (err.code !== 'SIGN_IN_CANCELLED') {
         setError('Грешка при Google вход');
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    const resetEmail = email.trim();
+    if (!resetEmail) {
+      Alert.alert(
+        'Забравена парола',
+        'Моля, въведете имейл адреса си в полето за имейл и опитайте отново.',
+      );
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, resetEmail);
+      Alert.alert(
+        'Имейл изпратен',
+        'Проверете имейла си за линк за нулиране на паролата.',
+      );
+    } catch (err: any) {
+      logger.error('Password reset error:', err);
+      switch (err.code) {
+        case 'auth/invalid-email':
+          Alert.alert('Грешка', 'Невалиден имейл адрес.');
+          break;
+        case 'auth/user-not-found':
+          Alert.alert('Грешка', 'Няма регистриран потребител с този имейл.');
+          break;
+        default:
+          Alert.alert('Грешка', 'Неуспешно изпращане. Моля, опитайте отново.');
+      }
     }
   };
 
@@ -178,7 +211,7 @@ export default function LoginScreen() {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.forgotPassword}>
+          <TouchableOpacity style={styles.forgotPassword} onPress={handleForgotPassword}>
             <Text style={styles.forgotPasswordText}>Забравена парола?</Text>
           </TouchableOpacity>
 

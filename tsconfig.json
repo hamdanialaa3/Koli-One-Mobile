@@ -9,12 +9,6 @@
     "paths": {
       "@/*": [
         "./src/*"
-      ],
-      "@koli-one/shared": [
-        "../shared/src/index.ts"
-      ],
-      "@koli-one/shared/*": [
-        "../shared/src/*"
       ]
     }
   },
@@ -22,7 +16,10 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts",
-    "../shared/src/**/*.ts"
+    "expo-env.d.ts"
+  ],
+  "exclude": [
+    "e2e/**",
+    "node_modules"
   ]
 }
