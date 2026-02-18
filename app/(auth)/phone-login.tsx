@@ -25,15 +25,8 @@ import {
   PhoneAuthProvider,
   signInWithCredential,
 } from 'firebase/auth';
+import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
 import { logger } from '../../src/services/logger-service';
-
-// Conditionally import recaptcha verifier (requires expo-firebase-recaptcha)
-let FirebaseRecaptchaVerifierModal: any = null;
-try {
-  FirebaseRecaptchaVerifierModal = require('expo-firebase-recaptcha').FirebaseRecaptchaVerifierModal;
-} catch {
-  // Package not installed — will show alert
-}
 
 const COUNTRY_CODE = '+359'; // Bulgaria
 
@@ -48,11 +41,6 @@ export default function PhoneLoginScreen() {
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
 
   const handleSendOTP = async () => {
-    if (!FirebaseRecaptchaVerifierModal) {
-      Alert.alert('Грешка', 'Модулът expo-firebase-recaptcha не е инсталиран. Изпълнете: npx expo install expo-firebase-recaptcha');
-      return;
-    }
-
     const formatted = phone.startsWith('+') ? phone : `${COUNTRY_CODE}${phone.replace(/^0/, '')}`;
 
     if (formatted.length < 10) {

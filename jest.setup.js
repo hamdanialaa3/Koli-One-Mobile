@@ -39,6 +39,24 @@ jest.mock('firebase/storage', () => ({
   getDownloadURL: jest.fn(),
 }));
 
+// Mock AsyncStorage
+jest.mock('@react-native-async-storage/async-storage', () =>
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock')
+);
+
+// Mock Expo SecureStore
+jest.mock('expo-secure-store', () => ({
+  getItemAsync: jest.fn(() => Promise.resolve(null)),
+  setItemAsync: jest.fn(() => Promise.resolve()),
+  deleteItemAsync: jest.fn(() => Promise.resolve()),
+}));
+
+// Mock Expo Constants
+jest.mock('expo-constants', () => ({
+  expoConfig: { extra: {} },
+  manifest: {},
+}));
+
 // Mock Expo modules
 jest.mock('expo-notifications', () => ({
   setNotificationHandler: jest.fn(),

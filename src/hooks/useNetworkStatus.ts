@@ -4,20 +4,12 @@
  */
 
 import { useState, useEffect } from 'react';
-import { logger } from '../services/logger-service';
+import NetInfo from '@react-native-community/netinfo';
 
 interface NetworkStatus {
   isConnected: boolean;
   isInternetReachable: boolean | null;
   type: string;
-}
-
-let NetInfo: any = null;
-try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  NetInfo = require('@react-native-community/netinfo').default;
-} catch {
-  // Package not installed — hook will return online by default
 }
 
 export function useNetworkStatus(): NetworkStatus {
@@ -28,11 +20,6 @@ export function useNetworkStatus(): NetworkStatus {
   });
 
   useEffect(() => {
-    if (!NetInfo) {
-      logger.info('NetInfo not available — assuming online');
-      return;
-    }
-
     const unsubscribe = NetInfo.addEventListener((state: any) => {
       setStatus({
         isConnected: state.isConnected ?? true,
