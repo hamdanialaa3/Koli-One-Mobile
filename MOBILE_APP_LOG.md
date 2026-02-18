@@ -38,74 +38,85 @@
 - **Mobile Header:** A reusable, versatile header component (`MobileHeader`) with notification and profile quick-access.
 
 ### Phase 8: The 9-Step Sell Workflow (Mobile.de Logic)
-- **Multi-Step Engine:** A state-driven form that guides the user through 9 specific steps:
-  1. Vehicle Type Selection.
-  2. Basic Data (Make/Model).
-  3. Technicals (Mileage/Year).
-  4. Engine (Fuel/Transmission).
-  5. Condition Assessment.
-  6. AI-Assisted Description.
-  7. Photo Management.
-  8. **Pricing & Finance (Step 8 Sync).**
-  9. Contact Information & Submission.
-- **Real Submission:** Connected to `SellService`, pushing listings directly to the production Firestore collections (`passenger_cars`).
+- **Multi-Step Engine:** A state-driven form that guides the user through 9 specific steps.
+- **Real Submission:** Connected to `SellService`, pushing listings directly to the production Firestore collections.
 
 ### Phase 9: "The Ultimate Connect" (Deep Web Parity)
 - **Real-time Hybrid Sync System:**
-  - Implemented `MessagingService` in Mobile mirroring the Web's deterministic channel logic (`msg_{u1}_{u2}_car_{id}`).
-  - Built a Premium Chat UI with real-time RTDB stream, bubble logic, and message statuses.
+  - Implemented `MessagingService` in Mobile mirroring the Web's deterministic channel logic.
+  - Built a Premium Chat UI.
 - **Dynamic Deep-Linked Views:**
-  - Created a high-end `CarDetails` screen with image carousels, stats grids, and sticky action footers.
-  - Enabled direct "One-Click" calling and WhatsApp integration.
+  - Created a high-end `CarDetails` screen.
 - **Service Layer Expansion:**
-  - Integrated `ListingService` with Firestore sub-collections (`passenger_cars`, `trucks`).
-  - Added support for fetching detailed car data by ID.
+  - Integrated `ListingService` with Firestore sub-collections.
 
 ### Phase 10: "The Mirror" (100% Web Parity Achieved)
 - **Master Platform Sync Layer:**
   - Implemented `PlatformSyncService` for cross-platform data integrity.
-  - Linked User Stats (Views, Listings, Messages) to real Firestore counters.
-  - Ported complete **Favorites Lifecycle** (Web/Mobile cross-save).
+  - Linked User Stats to real Firestore counters.
 - **Notification Ecosystem:**
-  - Created a real-time Notification listener for user-specific alerts.
-  - Integrated dynamic notification badges in the Global Header.
-  - Built a dedicated Notifications management screen.
+  - Created a real-time Notification listener.
 - **Deep Profile Management:**
-  - Created "My Garages" (My Ads) screen synced with global car collections.
-  - Created "My Favorites" screen mirroring the user's web wishlist.
-- **Analytics & Intelligence:**
-  - Implemented automated car view tracking (World-Class Telemetry).
-  - Ported "Call/WhatsApp/Message" event logic.
+  - Created "My Garages" and "My Favorites" screens.
+
+### Phase 11: P1 Critical Features (TASK 07-10) ✅
+
+- **Price Drop Alerts (TASK-07):**
+  - Cloud Functions for monitoring price changes.
+  - Push notification integration via Expo.
+  - Saved Search management and notification toggles.
+- **Reviews System (TASK-08):**
+  - Star rating system with half-star support.
+  - Review submission flow for sellers and cars.
+  - "My Reviews" dashboard for users.
+- **AI Price Estimator (TASK-09):**
+  - Real-time market analysis service using Firestore.
+  - Visual Price Gauge with deal ratings (Great, Fair, etc.).
+  - Confidence scoring based on sample size.
+- **Onboarding Flow (TASK-10):**
+  - Intent-based user onboarding (Buy/Sell/Both).
+  - Localization and City selection.
+  - Preference persistence in AsyncStorage.
+
+### Phase 12: Advanced AI & Monetization UI ✅
+- **AI Vehicle History:**
+  - VIN-based lookup interface.
+  - Detailed service and accident history reports (Mocked for MVP).
+- **Premium Subscriptions:**
+  - Modern UI for plan selection (Free, Premium, Dealer Pro).
+  - Billing cycles (Monthly/Yearly) and localized pricing.
 
 ---
 
 ## 🏗️ Technical Parity Metrix
 - **Backend Consistency:** 100% (Firestore/RTDB shared).
 - **Logic Synchronization:** 100% (Deterministic Channels & Favorites).
-- **Core Screen Parity:** 100% (Home, Search, Details, Garage, Inbox).
+- **Core Screen Parity:** 100% (Home, Search, Details, Garage, Inbox, Reviews, Pricing).
 
 ---
 
 ## 🛠️ Service Layer (The "Nerves")
-- **`firebase.ts`:** Global initialization with platform-specific persistence (AsyncStorage for Mobile).
-- **`ListingService.ts`:** Handles real-time data fetching across multiple car collections.
-- **`SellService.ts`:** Manages heavy-lifting for listing creation and media uploads.
-- **`AuthContext.tsx`:** Manages user sessions and Bulgarian user profile synchronization.
+- **`PriceEstimatorService.ts`:** Real-time market price analysis logic.
+- **`ReviewService.ts`:** CRUD operations and stats for user/car reviews.
+- **`SavedSearchesService.ts`:** Management of user-saved filters and alerts.
+- **`NotificationService.ts`:** Push token management and local notification handling.
 
 ---
 
-## 📅 Last Update: 2026-01-26
-- Complete synchronization of the **Sell Workflow** with the web's Step 8 pricing logic.
-- Migration from Mock Data to **Live Firestore Data** in Search, Map, and Featured Showcase.
-- Resolution of critical theme-based crashes (`TrustAndStats` property access fix).
+## 📅 Last Update: 2026-02-13
+- Completed all P1 Tasks (07, 08, 09, 10).
+- Implemented AI History lookup interface.
+- Refactored Subscription/Billing screens to match premium branding.
+- Unified reviews system with web platform schema.
 
 ---
 
 ## 📝 Next Steps (Upcoming Tasks)
-1. **Phase 8.5: Real-time Messaging:** Implement the Chat system for buyer-seller interaction.
-2. **Push Notifications:** Setup Expo Push Tokens for real-time alerts.
-3. **Enhanced AI Scan:** Integration of `expo-camera` with AI models for automatic VIN and plate recognition.
+1. **App Store Preparation:** Finalizing metadata and assets for Google Play/App Store.
+2. **Real-time Performance Monitoring:** Integrating Firebase Performance/Crashlytics.
+3. **Deep Link Refinement:** Enhancing shareable car links with branch.io or Expo Router.
 
 ---
 
 **Document generated by Antigravity AI Assistant.**
+

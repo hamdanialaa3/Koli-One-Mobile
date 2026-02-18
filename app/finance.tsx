@@ -45,7 +45,7 @@ const InputField = styled.View`
   align-items: center;
   background-color: ${props => props.theme.colors.background.default};
   border-radius: 12px;
-  padding: 0 16px;
+    padding: 0px 16px;
   height: 54px;
   margin-bottom: 20px;
   border-width: 1px;

@@ -94,7 +94,7 @@ export default function FavoritesScreen() {
                 data={listings}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                    <CarCard listing={item} onPress={() => router.push(`/car/${item.id}`)} />
+                    <CarCard listing={item} onPress={() => router.push({ pathname: '/car/[id]', params: { id: item.id } })} />
                 )}
                 contentContainerStyle={{ padding: 16 }}
                 refreshControl={

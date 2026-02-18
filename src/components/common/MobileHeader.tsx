@@ -15,7 +15,7 @@ const HeaderContainer = styled.View<{ transparent?: boolean }>`
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  border-bottom-width: ${props => props.transparent ? '0' : '1px'};
+  border-bottom-width: ${props => props.transparent ? '0px' : '1px'};
   border-bottom-color: ${props => props.theme.colors.border.muted};
 `;
 
@@ -133,6 +133,11 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
                             </Badge>
                         )}
                     </TouchableOpacity>
+
+                    <TouchableOpacity onPress={() => router.push('/profile/settings')}>
+                        <Ionicons name="settings-outline" size={24} color={iconColor} />
+                    </TouchableOpacity>
+
                     <TouchableOpacity onPress={() => router.push('/(tabs)/profile')}>
                         {user?.photoURL ? (
                             <Avatar source={{ uri: user.photoURL }} />

@@ -37,7 +37,7 @@ const WarningText = styled.Text`
 `;
 
 const Section = styled.View`
-  margin: 0 20px 20px;
+    margin: 0px 20px 20px;
   background-color: ${props => props.theme.colors.background.paper};
   border-radius: 20px;
   padding: 24px;

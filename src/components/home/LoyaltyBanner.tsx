@@ -74,7 +74,7 @@ const PrimaryButton = styled.View`
 `;
 
 const PrimaryButtonText = styled.Text`
-  color: #FF7900;
+  color: #7B2FBE;
   font-size: 15px;
   font-weight: 800;
 `;
@@ -102,9 +102,9 @@ export default function LoyaltyBanner() {
   if (user) return null;
 
   return (
-    <BannerContainer onPress={() => router.push('/profile' as any)} activeOpacity={0.9}>
+    <BannerContainer onPress={() => router.push('/(auth)/register')} activeOpacity={0.9}>
       <ContentGradient
-        colors={['#FF7900', '#FF4500']}
+        colors={['#7B2FBE', '#5C1299']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >

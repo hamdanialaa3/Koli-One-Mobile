@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import { ScrollView, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { theme } from '../../styles/theme';
 
 const brands = [
@@ -47,17 +48,19 @@ const ScrollContent = styled.ScrollView`
 `;
 
 export default function PopularBrands() {
+  const router = useRouter();
+
   return (
     <Container>
       <SectionTitle>Popular Brands</SectionTitle>
       <ScrollContent horizontal showsHorizontalScrollIndicator={false}>
         {brands.map((brand) => (
-          <BrandCard key={brand.id}>
+          <BrandCard key={brand.id} onPress={() => router.push({ pathname: '/(tabs)/search', params: { brand: brand.name } })}>
             {/* Future: Image component for logos */}
             <BrandText>{brand.name}</BrandText>
           </BrandCard>
         ))}
-        <View style={{ width: '20px' as any }} />
+        <View style={{ width: 20 }} />
       </ScrollContent>
     </Container>
   );

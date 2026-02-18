@@ -6,7 +6,7 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import { Car, Truck, Users, Package, Bike, Bus } from 'lucide-react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { theme } from '../../styles/theme';
 
 interface VehicleType {
@@ -136,11 +136,10 @@ const CountText = styled.Text`
 `;
 
 export default function VehicleClassifications() {
-  const navigation = useNavigation();
+  const router = useRouter();
 
   const handleTypePress = (type: VehicleType) => {
-    // @ts-ignore - navigation typing
-    navigation.navigate('Search', { vehicleType: type.id });
+    router.push({ pathname: '/(tabs)/search', params: { vehicleType: type.id } });
   };
 
   return (

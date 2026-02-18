@@ -47,17 +47,18 @@ export const getBrowsingHistory = async (): Promise<HistoryItem[]> => {
         if (jsonValue == null) return [];
 
         const rawHistory = JSON.parse(jsonValue);
-        // Parse dates back
-        return rawHistory.map((item: any) => ({
-            ...item,
-            viewedAt: new Date(item.viewedAt),
-            // Ensure CreatedAt is Date too if needed, though UnifiedCar uses Date
-            listing: {
-                ...item.listing,
-                createdAt: new Date(item.listing.createdAt),
-                updatedAt: new Date(item.listing.updatedAt)
-            }
-        }));
+        // Parse dates back, filter out corrupt entries where listing is missing
+        return rawHistory
+            .filter((item: any) => item && item.listing)
+            .map((item: any) => ({
+                ...item,
+                viewedAt: new Date(item.viewedAt),
+                listing: {
+                    ...item.listing,
+                    createdAt: item.listing.createdAt ? new Date(item.listing.createdAt) : new Date(),
+                    updatedAt: item.listing.updatedAt ? new Date(item.listing.updatedAt) : new Date()
+                }
+            }));
     } catch (e) {
         logger.error('Failed to load browsing history', e as Error);
         return [];

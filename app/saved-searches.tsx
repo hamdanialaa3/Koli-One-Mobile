@@ -277,7 +277,7 @@ export default function SavedSearchesScreen() {
                 Запазете търсене, за да получавате{'\n'}
                 известия при спад на цената
             </EmptySubtitle>
-            <CreateButton theme={theme} onPress={() => router.push('/search')}>
+            <CreateButton theme={theme} onPress={() => router.push('/(tabs)/search')}>
                 <CreateButtonText>Започнете търсене</CreateButtonText>
             </CreateButton>
         </EmptyState>
@@ -314,7 +314,7 @@ export default function SavedSearchesScreen() {
             />
 
             {searches.length > 0 && (
-                <FAB theme={theme} onPress={() => router.push('/search')}>
+                <FAB theme={theme} onPress={() => router.push('/(tabs)/search')}>
                     <Ionicons name="add" size={28} color="#fff" />
                 </FAB>
             )}

@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
+import { logger } from '../../services/logger-service';
 import { ActivityIndicator, View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import PriceEstimatorService, { PriceEstimateResult, PriceEstimateInput } from '../../services/PriceEstimatorService';
 import { PriceGauge } from './PriceGauge';
 import { theme } from '../../styles/theme';
@@ -23,9 +25,8 @@ const Card = styled.View`
   shadow-radius: 10px;
 `;
 
-const Header = styled.View`
+const Header = styled(LinearGradient)`
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
@@ -212,7 +213,7 @@ export const PriceEstimatorCard: React.FC<Props> = ({ carData, currency = '€' 
 
       setEstimate(result);
     } catch (err) {
-      console.error('Failed to fetch price estimate:', err);
+      logger.error('Failed to fetch price estimate', err);
       setError('Не успяхме да изчислим справедлива цена. Моля, опитайте отново.');
     } finally {
       setLoading(false);
@@ -265,7 +266,7 @@ export const PriceEstimatorCard: React.FC<Props> = ({ carData, currency = '€' 
 
   return (
     <Card theme={theme}>
-      <Header>
+      <Header colors={['#667eea', '#764ba2']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
         <View>
           <HeaderLeft>
             <Ionicons name="analytics-outline" size={24} color="#fff" />

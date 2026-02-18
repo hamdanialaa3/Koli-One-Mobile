@@ -71,7 +71,7 @@ const Subtitle = styled.Text`
 const SummaryGrid = styled.View`
   flex-direction: row;
   flex-wrap: wrap;
-  padding: 0 20px;
+    padding: 0px 20px;
   gap: 16px;
 `;
 

@@ -39,9 +39,9 @@ const TabButton = styled(TouchableOpacity) <{ active: boolean }>`
   flex: 1;
   padding: 10px;
   border-radius: 8px;
-  background-color: ${props => props.active ? '#FFF4EB' : 'transparent'};
+  background-color: ${props => props.active ? '#F3E8FF' : 'transparent'};
   border-width: 1px;
-  border-color: ${props => props.active ? '#FF7900' : 'transparent'};
+  border-color: ${props => props.active ? '#7B2FBE' : 'transparent'};
   align-items: center;
   flex-direction: row;
   justify-content: center;
@@ -51,7 +51,7 @@ const TabButton = styled(TouchableOpacity) <{ active: boolean }>`
 const TabText = styled.Text<{ active: boolean }>`
   font-size: 13px;
   font-weight: 600;
-  color: ${props => props.active ? '#FF7900' : '#64748b'};
+  color: ${props => props.active ? '#7B2FBE' : '#64748b'};
 `;
 
 const FormContainer = styled.View`
@@ -95,12 +95,12 @@ const GradientButton = styled(LinearGradient)`
   margin-top: 8px;
   elevation: 4;
   ${Platform.OS !== 'web' ? `
-    shadow-color: #FF7900;
+    shadow-color: #7B2FBE;
     shadow-offset: 0px 4px;
     shadow-opacity: 0.3;
     shadow-radius: 8px;
   ` : `
-    box-shadow: 0px 4px 8px rgba(255, 121, 0, 0.3);
+    box-shadow: 0px 4px 8px rgba(123, 47, 190, 0.3);
   `}
 `;
 
@@ -165,11 +165,11 @@ export default function SearchWidget() {
     <WidgetContainer intensity={20} tint="dark">
       <TabsContainer>
         <TabButton active={activeTab === 'all'} onPress={() => setActiveTab('all')}>
-          <Ionicons name="car-outline" size={16} color={activeTab === 'all' ? '#FF7900' : '#64748b'} />
+          <Ionicons name="car-outline" size={16} color={activeTab === 'all' ? '#7B2FBE' : '#64748b'} />
           <TabText active={activeTab === 'all'}>All Cars</TabText>
         </TabButton>
         <TabButton active={activeTab === 'used'} onPress={() => setActiveTab('used')}>
-          <Ionicons name="checkmark-circle-outline" size={16} color={activeTab === 'used' ? '#FF7900' : '#64748b'} />
+          <Ionicons name="checkmark-circle-outline" size={16} color={activeTab === 'used' ? '#7B2FBE' : '#64748b'} />
           <TabText active={activeTab === 'used'}>Used</TabText>
         </TabButton>
         <TabButton active={activeTab === 'new'} onPress={() => setActiveTab('new')}>
@@ -215,7 +215,7 @@ export default function SearchWidget() {
           {/* Search Button */}
           <AnimatedButton onPress={handleSearch}>
             <GradientButton
-              colors={['#FF7900', '#FF9433']}
+              colors={['#7B2FBE', '#9C5FE0']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
             >

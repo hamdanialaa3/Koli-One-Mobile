@@ -26,18 +26,25 @@ declare module 'styled-components/native' {
             background: {
                 default: string;
                 paper: string;
+                subtle: string;
+                elevated: string;
                 dark: string;
+                overlay: string;
             };
             text: {
                 primary: string;
                 secondary: string;
+                tertiary: string;
                 disabled: string;
                 inverse: string;
+                link: string;
+                brand: string;
             };
             border: {
                 default: string;
                 muted: string;
                 focus: string;
+                light: string;
             };
             status: {
                 success: string;
@@ -45,31 +52,80 @@ declare module 'styled-components/native' {
                 error: string;
                 info: string;
             };
+            mobileDe: {
+                background: string;
+                surface: string;
+                surfaceHighlight: string;
+                primary: string;
+                text: string;
+                textSecondary: string;
+                textTertiary: string;
+                success: string;
+                purple: string;
+                purpleHover: string;
+            };
+            brand: {
+                orange: string;
+                orangeLight: string;
+                dark: string;
+                light: string;
+                glass: string;
+                glassDark: string;
+            };
+            gradient: {
+                primary: readonly [string, string];
+                brand: readonly [string, string];
+                premium: readonly [string, string];
+                dark: readonly [string, string];
+                hero: readonly [string, string];
+                card: readonly [string, string];
+                glass: readonly [string, string];
+                sunset: readonly [string, string];
+            };
+            glassmorphism: {
+                background: string;
+                border: string;
+            };
         };
         typography: {
             sizes: {
-                xs: string;
-                sm: string;
-                md: string;
-                lg: string;
-                xl: string;
-                xxl: string;
-                xxxl: string;
+                '2xs': number;
+                xs: number;
+                sm: number;
+                md: number;
+                lg: number;
+                xl: number;
+                '2xl': number;
+                '3xl': number;
+                '4xl': number;
+                '5xl': number;
+                '6xl': number;
             };
             weights: {
                 regular: string;
                 medium: string;
+                semibold: string;
                 bold: string;
                 black: string;
             };
+            lineHeights: {
+                tight: number;
+                normal: number;
+                relaxed: number;
+            };
         };
         spacing: {
+            '2xs': string;
             xs: string;
             sm: string;
             md: string;
             lg: string;
             xl: string;
-            xxl: string;
+            '2xl': string;
+            '3xl': string;
+            '4xl': string;
+            '5xl': string;
+            '6xl': string;
         };
         borderRadius: {
             xs: string;
@@ -77,25 +133,35 @@ declare module 'styled-components/native' {
             md: string;
             lg: string;
             xl: string;
+            '2xl': string;
+            '3xl': string;
             round: string;
         };
         shadows: {
-            sm: {
-                shadowColor?: string;
-                shadowOffset?: { width: number; height: number };
-                shadowOpacity?: number;
-                shadowRadius?: number;
-                elevation?: number;
-                boxShadow?: string;
-            };
-            md: {
-                shadowColor?: string;
-                shadowOffset?: { width: number; height: number };
-                shadowOpacity?: number;
-                shadowRadius?: number;
-                elevation?: number;
-                boxShadow?: string;
-            };
+            none: any;
+            xs: any;
+            sm: any;
+            md: any;
+            lg: any;
+            xl: any;
+            card: any;
+            premium: any;
+        };
+        screen: {
+            width: number;
+            height: number;
+            isSmall: boolean;
+            isMedium: boolean;
+            isLarge: boolean;
+        };
+        zIndex: {
+            base: number;
+            card: number;
+            sticky: number;
+            dropdown: number;
+            modal: number;
+            toast: number;
+            tooltip: number;
         };
     }
 }

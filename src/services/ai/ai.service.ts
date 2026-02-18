@@ -79,6 +79,64 @@ class AIService {
         }
     }
 
+    /**
+     * Get AI-powered price suggestion using Gemini via Cloud Function
+     */
+    async getPriceSuggestion(params: {
+        make: string;
+        model: string;
+        year: number;
+        mileage?: number;
+        condition?: string;
+        location?: string;
+        fuelType?: string;
+    }): Promise<{
+        minPrice: number;
+        avgPrice: number;
+        maxPrice: number;
+        confidence: number;
+        reasoning: string;
+        marketTrend: string;
+        similarCount: number;
+    }> {
+        try {
+            const fn = httpsCallable(this.functions, 'geminiPriceSuggestion');
+            const response = await fn(params);
+            const data = response.data as any;
+            return {
+                minPrice: data.minPrice ?? 0,
+                avgPrice: data.avgPrice ?? 0,
+                maxPrice: data.maxPrice ?? 0,
+                confidence: data.confidence ?? 80,
+                reasoning: data.reasoning ?? '',
+                marketTrend: data.marketTrend ?? 'stable',
+                similarCount: data.similarCount ?? 0,
+            };
+        } catch (error) {
+            logger.error('AI Price Suggestion Error', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Check user's AI quota
+     */
+    async checkQuota(): Promise<{ remaining: number; limit: number; resetsAt: string }> {
+        try {
+            const fn = httpsCallable(this.functions, 'aiQuotaCheck');
+            const response = await fn({});
+            const data = response.data as any;
+            return {
+                remaining: data.remaining ?? 0,
+                limit: data.limit ?? 10,
+                resetsAt: data.resetsAt ?? '',
+            };
+        } catch (error) {
+            logger.error('AI Quota Check Error', error);
+            throw error;
+        }
+    }
+
 }
 
 export const aiService = new AIService();

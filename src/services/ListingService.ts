@@ -4,6 +4,7 @@ import { collection, query, where, getDocs, limit, doc, getDoc, updateDoc, serve
 import { ListingBase } from '../types/ListingBase';
 import { ListingNormalizer } from './normalization/ListingNormalizer';
 import { logger } from './logger-service';
+import { captureException } from './sentry';
 
 /**
  * All vehicle collections synchronized with web
@@ -37,7 +38,7 @@ export class ListingService {
             return await promise;
         } catch (error) {
             logger.warn(`Error in ${operation}`, { error });
-            // TODO: Log to analytics/crashlytics here
+            captureException(error, { operation });
             return fallback;
         }
     }
@@ -134,12 +135,11 @@ export class ListingService {
                 }
             }
             
-            // Count dealers (users with profileType 'dealer')
+            // Count dealers from dealerships collection (public read access)
             let totalDealers = 0;
             try {
                 const dealersQuery = query(
-                    collection(db, 'users'),
-                    where('profileType', '==', 'dealer'),
+                    collection(db, 'dealerships'),
                     where('isActive', '==', true)
                 );
                 const dealersSnapshot = await getDocs(dealersQuery);
@@ -230,16 +230,11 @@ export class ListingService {
     }
     
     /**
-     * Get category placeholder images
+     * Get category placeholder image — returns empty string.
+     * UI components handle the no-image state with their own placeholders.
      */
-    private static getCategoryImage(categoryId: string): string {
-        const images: Record<string, string> = {
-            'suv': 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=600&q=80',
-            'sedan': 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80',
-            'electric': 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=600&q=80',
-            'station_wagon': 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=600&q=80'
-        };
-        return images[categoryId] || images['sedan'];
+    private static getCategoryImage(_categoryId: string): string {
+        return '';
     }
 
     /**

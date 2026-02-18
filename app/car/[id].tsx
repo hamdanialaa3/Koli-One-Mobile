@@ -4,6 +4,7 @@ import styled from 'styled-components/native';
 import {
   ScrollView,
   View,
+  Text,
   Dimensions,
   TouchableOpacity,
   ActivityIndicator,
@@ -133,7 +134,7 @@ const ActionButton = styled(AnimatedButton) <{ variant?: 'primary' | 'outline' |
   background-color: ${props =>
     props.variant === 'primary' ? props.theme.colors.primary.main :
       props.variant === 'whatsapp' ? '#25D366' : 'transparent'};
-  border-width: ${props => props.variant === 'outline' ? '1.5px' : '0'};
+  border-width: ${props => props.variant === 'outline' ? '1.5px' : '0px'};
   border-color: ${props => props.theme.colors.border.muted};
 `;
 
@@ -232,6 +233,9 @@ export default function CarDetailsScreen() {
           <Ionicons name="chevron-back" size={24} color="#fff" />
         </CircleButton>
         <View style={{ flexDirection: 'row', gap: 10 }}>
+          <CircleButton onPress={() => router.push({ pathname: '/report', params: { listingId: car.id, title: `${car.make} ${car.model}` } })}>
+            <Ionicons name="flag-outline" size={20} color="#fff" />
+          </CircleButton>
           <CircleButton onPress={handleShare}>
             <Ionicons name="share-outline" size={20} color="#fff" />
           </CircleButton>
@@ -248,7 +252,9 @@ export default function CarDetailsScreen() {
       <ScrollView showsVerticalScrollIndicator={false}>
         <ImageGallery horizontal pagingEnabled showsHorizontalScrollIndicator={false}>
           {car.images && car.images.length > 0 ? (
-            car.images.map((img, i) => (
+            car.images
+              .filter((img) => img && (img.startsWith('http://') || img.startsWith('https://')))
+              .map((img, i) => (
               <AnimatedImage
                 key={i}
                 source={{ uri: img }}
@@ -256,7 +262,8 @@ export default function CarDetailsScreen() {
                 contentFit="cover"
               />
             ))
-          ) : (
+          ) : null}
+          {(!car.images || car.images.filter((img) => img && (img.startsWith('http://') || img.startsWith('https://'))).length === 0) && (
             <AnimatedImage
               source={require('../../assets/images/placeholder-car.png')}
               style={{ width, height: 350 }}
@@ -288,6 +295,32 @@ export default function CarDetailsScreen() {
         {car.vin && (
           <VinCheckCard theme={theme} initialVin={car.vin} />
         )}
+
+        {/* Vehicle History */}
+        <TouchableOpacity
+          onPress={() => router.push({ pathname: '/car/[id]/history', params: { id: car.id || '' } })}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            backgroundColor: theme.colors.background.paper,
+            marginHorizontal: 16,
+            marginVertical: 8,
+            padding: 16,
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: theme.colors.border.muted,
+          }}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <Ionicons name="time-outline" size={24} color={theme.colors.primary.main} />
+            <View>
+              <Text style={{ fontSize: 16, fontWeight: '700', color: theme.colors.text.primary }}>Vehicle History</Text>
+              <Text style={{ fontSize: 13, color: theme.colors.text.secondary }}>Check service records & timeline</Text>
+            </View>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color={theme.colors.text.disabled} />
+        </TouchableOpacity>
         
         <CarDetailsSeller car={car} />
         <CarDetailsReviews car={car} />

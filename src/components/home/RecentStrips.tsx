@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
+import { logger } from '../../services/logger-service';
 import { ScrollView, View, TouchableOpacity } from 'react-native';
 import { theme } from '../../styles/theme';
 import { CarCard } from '../CarCard';
@@ -77,7 +78,7 @@ export default function RecentStrips() {
                     setDeals(d);
                 }
             } catch (e) {
-                console.error("Failed to load strips", e);
+                logger.error('Failed to load strips', e);
             } finally {
                 if (mounted) setLoading(false);
             }

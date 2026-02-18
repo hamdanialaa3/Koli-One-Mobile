@@ -49,7 +49,7 @@ const SearchInput = styled.View`
   align-items: center;
   background-color: ${props => props.theme.colors.background.default};
   border-radius: 12px;
-  padding: 0 12px;
+    padding: 0px 12px;
   height: 48px;
 `;
 
@@ -292,7 +292,7 @@ export default function DealersScreen() {
                         />
                     }
                     renderItem={({ item }) => (
-                        <DealerCard theme={theme} onPress={() => router.push(`/profile/${item.id}` as any)}>
+                        <DealerCard theme={theme} onPress={() => router.push({ pathname: '/dealer/[slug]', params: { slug: item.id } })}>
                             <DealerLogo
                                 source={{
                                     uri: item.logoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=003366&color=fff`

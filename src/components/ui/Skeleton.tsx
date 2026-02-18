@@ -21,8 +21,8 @@ interface SkeletonProps {
 const SkeletonContainer = styled(Animated.View) <{ width?: number | string; height?: number | string; borderRadius?: number }>`
   background-color: ${theme.colors.background.dark};
   width: ${props => typeof props.width === 'number' ? `${props.width}px` : (props.width || '100%')};
-  height: ${props => typeof props.height === 'number' ? `${props.height}px` : (props.height || '20px')};
-  border-radius: ${props => props.borderRadius || 4}px;
+  height: ${props => typeof props.height === 'number' ? `${props.height}px` : (props.height || 20)};
+  border-radius: ${props => typeof props.borderRadius === 'number' ? `${props.borderRadius}px` : (props.borderRadius || 4)};
   overflow: hidden;
 `;
 

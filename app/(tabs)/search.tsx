@@ -17,7 +17,7 @@ import { SortModal, SortType, SORT_OPTIONS } from '../../src/components/search/S
 import { FilterState } from '../../src/services/search/UnifiedFilterTypes';
 import { SavedSearchesService } from '../../src/services/SavedSearchesService';
 import { useAuth } from '../../src/contexts/AuthContext';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { logger } from '../../src/services/logger-service';
 
 const { width } = Dimensions.get('window');
@@ -46,7 +46,7 @@ const SearchInputContainer = styled.View`
   align-items: center;
   background-color: ${props => props.theme.colors.background.default};
   border-radius: 12px;
-  padding: 0 12px;
+  padding: 0px 12px;
   height: 48px;
 `;
 
@@ -136,7 +136,7 @@ const ModalTitle = styled.Text`
 const ModalInput = styled.TextInput`
   height: 48px;
   border-radius: 12px;
-  padding: 0 12px;
+  padding: 0px 12px;
   border-width: 1px;
   border-color: ${props => props.theme.colors.border.muted};
   color: ${props => props.theme.colors.text.primary};
@@ -178,6 +178,12 @@ const CATEGORY_MAP: Record<string, string> = {
 export default function SearchScreen() {
   const router = useRouter();
   const { user } = useAuth();
+  const params = useLocalSearchParams<{
+    query?: string;
+    vehicleType?: string;
+    brand?: string;
+    category?: string;
+  }>();
   const {
     filters,
     results,
@@ -194,8 +200,28 @@ export default function SearchScreen() {
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
   const [saveSearchName, setSaveSearchName] = useState('');
 
-  // Trigger search when filters change (debounced could be better but explicit for now or effect)
-  // For this UI, let's trigger search on mount and when filters update
+  // Apply incoming navigation params as filters
+  useEffect(() => {
+    if (params.vehicleType) {
+      updateFilter('bodyType', params.vehicleType);
+    }
+    if (params.brand) {
+      updateFilter('make', params.brand);
+    }
+    if (params.query) {
+      // Handle category queries like "category=suv"
+      if (params.query.startsWith('category=')) {
+        updateFilter('bodyType', params.query.replace('category=', ''));
+      } else {
+        setSearchQuery(params.query);
+      }
+    }
+    if (params.category) {
+      updateFilter('bodyType', params.category);
+    }
+  }, [params.vehicleType, params.brand, params.query, params.category]);
+
+  // Trigger search when filters change
   useEffect(() => {
     search();
   }, [filters, search]);

@@ -11,11 +11,12 @@
 
 import React, { useState } from 'react';
 import styled from 'styled-components/native';
+import { logger } from '../../services/logger-service';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Camera, Upload, Sparkles, Zap } from 'lucide-react-native';
 import { TouchableOpacity, Alert, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { theme } from '../../styles/theme';
 
 const Container = styled.View`
@@ -25,15 +26,15 @@ const Container = styled.View`
   border-radius: 24px;
   border-width: 1px;
   border-color: rgba(147, 51, 234, 0.3);
-  ${({ theme }) => Platform.OS === 'web' ? {
-    boxShadow: '0px 12px 30px rgba(147, 51, 234, 0.25)'
-  } : {
-    shadowColor: theme.colors.accent.main,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
-    shadowRadius: 20,
-    elevation: 8
-  }}
+  ${({ theme }) => Platform.OS === 'web' ? `
+    box-shadow: 0px 12px 30px rgba(147, 51, 234, 0.25);
+  ` : `
+    shadow-color: ${theme.colors.accent.main};
+    shadow-offset: 0px 8px;
+    shadow-opacity: 0.25;
+    shadow-radius: 20px;
+    elevation: 8;
+  `}
 `;
 
 const ContentWrapper = styled.View`
@@ -101,9 +102,9 @@ const ActionButton = styled.Pressable<{ variant?: 'primary' | 'secondary' }>`
     variant === 'primary'
       ? 'rgba(255, 255, 255, 0.2)'
       : 'rgba(59, 130, 246, 0.4)'};
-  ${Platform.OS === 'web' ? {
-    boxShadow: '0px 0px 15px rgba(147, 51, 234, 0.4)'
-  } : {}}
+  ${Platform.OS === 'web' ? `
+    box-shadow: 0px 0px 15px rgba(147, 51, 234, 0.4);
+  ` : ''}
 `;
 
 const ButtonText = styled.Text<{ variant?: 'primary' | 'secondary' }>`
@@ -145,7 +146,7 @@ const IconWrapper = styled.View`
 `;
 
 export default function VisualSearchTeaser() {
-  const navigation = useNavigation();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const handleCameraSearch = async () => {
@@ -171,12 +172,11 @@ export default function VisualSearchTeaser() {
       if (!result.canceled && result.assets[0]) {
         setLoading(true);
         // Navigate to visual search results
-        // @ts-ignore - navigation typing
-        navigation.navigate('VisualSearch', { imageUri: result.assets[0].uri });
+        router.push({ pathname: '/VisualSearch', params: { imageUri: result.assets[0].uri } });
         setLoading(false);
       }
     } catch (error) {
-      console.error('Camera error:', error);
+      logger.error('Camera error', error);
       Alert.alert('Error', 'Failed to open camera. Please try again.');
     }
   };
@@ -204,12 +204,11 @@ export default function VisualSearchTeaser() {
       if (!result.canceled && result.assets[0]) {
         setLoading(true);
         // Navigate to visual search results
-        // @ts-ignore - navigation typing
-        navigation.navigate('VisualSearch', { imageUri: result.assets[0].uri });
+        router.push({ pathname: '/VisualSearch', params: { imageUri: result.assets[0].uri } });
         setLoading(false);
       }
     } catch (error) {
-      console.error('Gallery error:', error);
+      logger.error('Gallery error', error);
       Alert.alert('Error', 'Failed to open gallery. Please try again.');
     }
   };

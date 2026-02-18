@@ -1,5 +1,6 @@
 // src/components/SmartCamera.tsx
 import React, { useState, useRef } from 'react';
+import { logger } from '../services/logger-service';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { Button, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import styled from 'styled-components/native';
@@ -96,7 +97,7 @@ export default function SmartCamera({ onCapture, onClose }: SmartCameraProps) {
                 });
                 onCapture(photo);
             } catch (error) {
-                console.error('Capture failed:', error);
+                logger.error('Capture failed', error);
             } finally {
                 setProcessing(false);
             }
@@ -117,7 +118,7 @@ export default function SmartCamera({ onCapture, onClose }: SmartCameraProps) {
 
                     <ControlsRow>
                         {/* Flash/Flip controls could go here */}
-                        <View style={{ width: '40px' as any }} />
+                        <View style={{ width: 40 }} />
 
                         {processing ? (
                             <ActivityIndicator size="large" color="#fff" />
@@ -127,7 +128,7 @@ export default function SmartCamera({ onCapture, onClose }: SmartCameraProps) {
                             </CaptureButton>
                         )}
 
-                        <View style={{ width: '40px' as any }} />
+                        <View style={{ width: 40 }} />
                     </ControlsRow>
                 </Overlay>
             </CameraView>

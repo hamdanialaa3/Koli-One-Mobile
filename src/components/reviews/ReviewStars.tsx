@@ -30,13 +30,13 @@ const StarsRow = styled.View`
 `;
 
 const CountText = styled.Text<{ size: 'small' | 'medium' | 'large' }>`
-  font-size: ${props => props.size === 'small' ? '12px' : props.size === 'medium' ? '14px' : '16px'};
+  font-size: ${props => props.size === 'small' ? 12 : props.size === 'medium' ? 14 : 16};
   color: ${props => props.theme.colors.text.secondary};
   margin-left: 4px;
 `;
 
 const RatingText = styled.Text<{ size: 'small' | 'medium' | 'large' }>`
-  font-size: ${props => props.size === 'small' ? '13px' : props.size === 'medium' ? '15px' : '18px'};
+  font-size: ${props => props.size === 'small' ? 13 : props.size === 'medium' ? 15 : 18};
   font-weight: 700;
   color: ${props => props.theme.colors.text.primary};
   margin-left: 4px;

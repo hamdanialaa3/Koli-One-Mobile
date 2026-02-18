@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components/native';
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { theme } from '../../styles/theme';
 import { MobileHeader } from '../common/MobileHeader';
 import { VehicleFormData } from '../../types/sellTypes';
 import { SellService } from '../../services/SellService';
+import { DraftService } from '../../services/DraftService';
+import { logger } from '../../services/logger-service';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSellStore } from '../../store/useSellStore';
+import { useAuth } from '../../contexts/AuthContext';
 
 // Steps
 import BasicInfoStep from './steps/BasicInfoStep';
@@ -87,7 +90,56 @@ const WizardOrchestrator: React.FC = () => {
         images
     } = useSellStore();
 
+    const { user } = useAuth();
     const [isPublishing, setIsPublishing] = useState(false);
+    const draftLoaded = useRef(false);
+
+    /* ── Cloud draft restore (once, on mount) ────────── */
+    useEffect(() => {
+        if (!user || draftLoaded.current) return;
+        draftLoaded.current = true;
+
+        (async () => {
+            try {
+                // Only restore if local store looks empty (step 1, no make)
+                if (step === 1 && !form.make) {
+                    const draft = await DraftService.loadDraft();
+                    if (draft) {
+                        Alert.alert(
+                            'Resume Draft?',
+                            'You have an unfinished listing. Would you like to continue where you left off?',
+                            [
+                                { text: 'Start Fresh', style: 'destructive' },
+                                {
+                                    text: 'Resume',
+                                    onPress: () => {
+                                        setFormData(draft.form);
+                                        setStep(draft.step);
+                                        // Restore images if any had remote URIs
+                                        draft.images?.forEach(img => {
+                                            if (img.uri) useSellStore.getState().addImage(img);
+                                        });
+                                    },
+                                },
+                            ],
+                        );
+                    }
+                }
+            } catch (err) {
+                logger.error('Failed to restore cloud draft', err);
+            }
+        })();
+    }, [user]);
+
+    /* ── Auto-save to Firestore on state changes ─────── */
+    useEffect(() => {
+        if (!user) return;
+        // Skip auto-save while publishing
+        if (isPublishing) return;
+        DraftService.scheduleSave(form, images, step);
+
+        return () => DraftService.cancelPendingSave();
+    }, [form, images, step, user, isPublishing]);
 
     // TASK-14: Initialize with AI-extracted data if available
     useEffect(() => {
@@ -160,6 +212,9 @@ const WizardOrchestrator: React.FC = () => {
                 images: validImages
             });
 
+            // Clean up cloud draft after successful publish
+            await DraftService.deleteDraft();
+
             Alert.alert(
                 "Success! 🎉",
                 "Your vehicle has been listed and is now live on Koli One.",
@@ -172,7 +227,7 @@ const WizardOrchestrator: React.FC = () => {
             );
         } catch (error) {
             Alert.alert("Error", "Something went wrong while publishing your ad. Please try again.");
-            console.error(error);
+            logger.error('Publish failed', error);
         } finally {
             setIsPublishing(false);
         }

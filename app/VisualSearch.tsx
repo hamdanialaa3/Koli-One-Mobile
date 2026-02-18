@@ -89,7 +89,7 @@ const PickerButton = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background-color: ${(p: any) => p.theme.colors.primary || '#FF7900'};
+  background-color: ${(p: any) => p.theme.colors.primary || '#7B2FBE'};
   padding: 14px 0;
   border-radius: 12px;
 `;
@@ -127,7 +127,7 @@ const StyledInput = styled.TextInput`
 
 const SearchButton = styled.TouchableOpacity<{ disabled?: boolean }>`
   width: 100%;
-  background-color: ${(p: any) => (p.disabled ? '#aaa' : p.theme.colors.primary || '#FF7900')};
+  background-color: ${(p: any) => (p.disabled ? '#aaa' : p.theme.colors.primary || '#7B2FBE')};
   padding: 16px;
   border-radius: 12px;
   align-items: center;
@@ -179,7 +179,7 @@ const ResultMeta = styled.Text`
 const ResultPrice = styled.Text`
   font-size: 15px;
   font-weight: 800;
-  color: ${(p: any) => p.theme.colors.primary || '#FF7900'};
+  color: ${(p: any) => p.theme.colors.primary || '#7B2FBE'};
   margin-top: 4px;
 `;
 
@@ -349,7 +349,7 @@ export default function VisualSearchScreen() {
           {/* ---- IDLE: pick image ---- */}
           {screenState === 'idle' && (
             <>
-              <Ionicons name="camera-outline" size={64} color={theme.colors.primary.main || '#FF7900'} />
+              <Ionicons name="camera-outline" size={64} color={theme.colors.primary.main || '#7B2FBE'} />
               <Title theme={theme}>Визуално търсене</Title>
               <Subtitle theme={theme}>
                 Снимайте или изберете снимка на автомобил, след което въведете марка и модел, за да намерите подобни обяви.
@@ -409,7 +409,7 @@ export default function VisualSearchScreen() {
           {/* ---- SEARCHING ---- */}
           {screenState === 'searching' && (
             <>
-              <ActivityIndicator size="large" color={theme.colors.primary.main || '#FF7900'} style={{ marginTop: 24 }} />
+              <ActivityIndicator size="large" color={theme.colors.primary.main || '#7B2FBE'} style={{ marginTop: 24 }} />
               <Title theme={theme}>Търсене...</Title>
               <Subtitle theme={theme}>
                 Търсим обяви за {make} {model} в {VEHICLE_COLLECTIONS.length} категории.

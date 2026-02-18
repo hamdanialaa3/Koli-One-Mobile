@@ -1,18 +1,17 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import { BlurView } from 'expo-blur';
-import { Platform, SafeAreaView, View, TouchableOpacity, StatusBar } from 'react-native';
+import { Platform, SafeAreaView, View, TouchableOpacity, StatusBar, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { theme } from '../../styles/theme';
 
 const HeaderContainer = styled.View`
   width: 100%;
-  background-color: ${props => props.theme.colors.background.paper}; 
+  background-color: ${props => props.theme.colors.background.default}; 
   border-bottom-width: 1px;
-  border-bottom-color: ${props => props.theme.colors.border.muted};
+  border-bottom-color: ${props => props.theme.colors.border.default};
   padding-top: ${Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 10 : 0}px; 
-  /* iOS SafeArea handled by SafeAreaView if used, but BlurView usually needs absolute positioning or specific handling */
 `;
 
 const Content = styled.View`
@@ -29,10 +28,10 @@ const LogoContainer = styled.TouchableOpacity`
 `;
 
 const LogoText = styled.Text`
-  font-size: 18px;
-  font-weight: 800;
+  font-size: 20px;
+  font-weight: 900;
   color: ${props => props.theme.colors.primary.main};
-  letter-spacing: 0.5px;
+  letter-spacing: -0.5px;
 `;
 
 const Actions = styled.View`
@@ -47,43 +46,49 @@ const IconButton = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
   border-radius: 20px;
-  background-color: ${props => props.theme.colors.background.default};
+  background-color: ${props => props.theme.colors.background.paper};
 `;
 
 const StatusDot = styled.View`
   width: 8px;
   height: 8px;
   border-radius: 4px;
-  background-color: #10b981;
+  background-color: ${props => props.theme.colors.status.success};
   position: absolute;
   top: 10px;
   right: 12px;
   border-width: 1px;
-  border-color: #fff;
+  border-color: ${props => props.theme.colors.background.paper};
 `;
 
 export default function MobileHeader() {
-    const router = useRouter();
+  const router = useRouter();
 
-    return (
-        <HeaderContainer theme={theme}>
-            <Content>
-                <LogoContainer onPress={() => router.push('/(tabs)/' as any)}>
-                    <Ionicons name="car-sport" size={24} color={theme.colors.primary.main} style={{ marginRight: 8 }} />
-                    <LogoText theme={theme}>Koli One</LogoText>
-                </LogoContainer>
+  return (
+    <HeaderContainer theme={theme}>
+      <StatusBar barStyle="light-content" backgroundColor={theme.colors.background.default} />
+      <Content>
+        <LogoContainer onPress={() => router.push('/(tabs)/' as any)}>
+          <LogoText theme={theme}>
+            mobile<Text style={{ color: theme.colors.primary.main }}>.de</Text> clone
+          </LogoText>
+        </LogoContainer>
 
-                <Actions>
-                    <IconButton theme={theme} onPress={() => router.push('/notifications' as any)}>
-                        <Ionicons name="notifications-outline" size={22} color={theme.colors.text.primary} />
-                        <StatusDot />
-                    </IconButton>
+        <Actions>
+          <IconButton theme={theme} onPress={() => router.push('/notifications' as any)}>
+            <Ionicons name="notifications-outline" size={22} color={theme.colors.text.primary} />
+            <StatusDot theme={theme} />
+          </IconButton>
 
-                    <IconButton theme={theme} onPress={() => router.push('/(tabs)/profile')}>
-                        <Ionicons name="person-circle-outline" size={26} color={theme.colors.text.primary} />
-                    </IconButton>
-                </Actions>
-            </Content>
-        </HeaderContainer>
-    );
+          <IconButton theme={theme} onPress={() => router.push('/profile/settings')}>
+            <Ionicons name="settings-outline" size={22} color={theme.colors.text.primary} />
+          </IconButton>
+
+          <IconButton theme={theme} onPress={() => router.push('/(tabs)/profile')}>
+            <Ionicons name="person-circle-outline" size={26} color={theme.colors.text.primary} />
+          </IconButton>
+        </Actions>
+      </Content>
+    </HeaderContainer>
+  );
 }

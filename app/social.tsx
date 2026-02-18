@@ -301,7 +301,7 @@ export default function SocialScreen() {
     }, [fetchFeed]);
 
     const handleCardPress = (item: FeedItem) => {
-        router.push(`/car/${item.id}` as any);
+        router.push({ pathname: '/car/[id]', params: { id: item.id } });
     };
 
     // ── Render helpers ─────────────────────────────────────────────

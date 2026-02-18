@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
+import { logger } from '../../services/logger-service';
 import { View, Image, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../styles/theme';
@@ -81,7 +82,7 @@ export const CarDetailsSeller: React.FC<CarDetailsSellerProps> = ({ car }) => {
             const data = await ReviewService.getSellerStats(car.sellerId);
             setStats(data);
         } catch (error) {
-            console.error('Failed to load seller stats:', error);
+            logger.error('Failed to load seller stats', error);
         } finally {
             setLoading(false);
         }

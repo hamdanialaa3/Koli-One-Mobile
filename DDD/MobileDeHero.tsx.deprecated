@@ -1,0 +1,68 @@
+import React from 'react';
+import styled from 'styled-components/native';
+import { View, Text, ImageBackground } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+
+const HeroContainer = styled.View`
+  width: 100%;
+  height: 220px;
+  background-color: ${props => props.theme.colors.mobileDe.surface};
+  position: relative;
+`;
+
+const HeroImage = styled(ImageBackground)`
+  width: 100%;
+  height: 100%;
+  justify-content: flex-end;
+`;
+
+const Overlay = styled(LinearGradient)`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+`;
+
+const TextContainer = styled.View`
+  padding: 20px;
+  padding-bottom: 40px; /* Extra padding for search bar overlap */
+  align-items: center;
+`;
+
+const BrandText = styled.Text`
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: ${props => props.theme.colors.mobileDe.textSecondary};
+  margin-bottom: 4px;
+  font-weight: 600;
+`;
+
+const HeadlineText = styled.Text`
+  font-size: 22px;
+  font-weight: 800;
+  color: ${props => props.theme.colors.mobileDe.text};
+  text-align: center;
+  line-height: 26px;
+`;
+
+export const MobileDeHero = () => {
+    return (
+        <HeroContainer>
+            <HeroImage
+                source={{ uri: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=2070&auto=format&fit=crop' }}
+                resizeMode="cover"
+            >
+                <Overlay
+                    colors={['transparent', 'rgba(18,18,18,0.8)', '#121212']}
+                    locations={[0.4, 0.8, 1]}
+                />
+                <TextContainer>
+                    <BrandText>Mercedes-Benz</BrandText>
+                    <HeadlineText>KURZFRISTIG SICHERN.{'\n'}LANGFRISTIG PROFITIEREN.</HeadlineText>
+                </TextContainer>
+            </HeroImage>
+        </HeroContainer>
+    );
+};

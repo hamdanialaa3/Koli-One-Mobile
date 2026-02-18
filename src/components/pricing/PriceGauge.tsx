@@ -73,7 +73,7 @@ const CurrentPriceLabel = styled.View<{ left: string; isBelow: boolean }>`
   position: absolute;
   left: ${props => props.left};
   ${props => props.isBelow ? 'top: 40px;' : 'bottom: 40px;'}
-  transform: translateX(-50%);
+  margin-left: -40px;
   background-color: #2196F3;
   padding: 6px 12px;
   border-radius: 16px;
@@ -99,7 +99,7 @@ const Label = styled.Text`
 `;
 
 const PriceText = styled.Text<{ bold?: boolean }>`
-  font-size: ${props => props.bold ? '14px' : '12px'};
+  font-size: ${props => props.bold ? 14 : 12};
   font-weight: ${props => props.bold ? '700' : '400'};
   color: ${props => props.theme.colors.text.primary};
 `;

@@ -27,7 +27,7 @@ export const common = {
     "overview": "Overview"
   },
   "errors": {
-    " notFound": {
+    "notFound": {
       "title": "Page not found",
       "subtitle": "404 - We can't find what you're looking for",
       "description": "The page you are looking for may have been moved or deleted.",

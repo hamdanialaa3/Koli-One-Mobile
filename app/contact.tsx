@@ -82,7 +82,7 @@ const InfoCard = styled.TouchableOpacity`
   flex-direction: row;
   align-items: center;
   padding: 16px;
-  margin: 0 20px 12px;
+  margin: 0px 20px 12px;
   background-color: ${props => props.theme.colors.background.paper};
   border-radius: 16px;
   border-width: 1px;

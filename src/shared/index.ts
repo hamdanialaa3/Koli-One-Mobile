@@ -22,3 +22,7 @@ export * from './types/numeric-id.types';
 // Constants
 export * from './constants/social-links';
 export * from './constants/vehicle-collections';
+
+// Locales (canonical source — synced to mobile via scripts/sync-shared.js)
+export { errors as errorsEn } from './locales/en/errors';
+export { errors as errorsBg } from './locales/bg/errors';

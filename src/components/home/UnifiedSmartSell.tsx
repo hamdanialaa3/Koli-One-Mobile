@@ -63,7 +63,7 @@ const Title = styled.Text`
 `;
 
 const TitleHighlight = styled.Text`
-  color: #FF8F10;
+  color: #8B3FCE;
 `;
 
 const Description = styled.Text`
@@ -123,7 +123,7 @@ const StatCard = styled.View`
 const StatValue = styled.Text`
   font-size: 20px;
   font-weight: 900;
-  color: #FF8F10;
+  color: #8B3FCE;
   margin-bottom: 4px;
 `;
 
@@ -141,7 +141,7 @@ const CTAButton = styled(Pressable)`
   gap: 10px;
   width: 100%;
   padding: 18px;
-  background-color: #FF8F10;
+  background-color: #8B3FCE;
   border-radius: 16px;
   margin-top: 8px;
   ${Platform.OS === 'web' ? {
@@ -233,19 +233,19 @@ export default function UnifiedSmartSell() {
 
           <BenefitsList>
             <BenefitItem>
-              <DollarSign color="#FF8F10" size={14} />
+              <DollarSign color="#8B3FCE" size={14} />
               <BenefitText>Smart Pricing</BenefitText>
             </BenefitItem>
             <BenefitItem>
-              <Target color="#FF8F10" size={14} />
+              <Target color="#8B3FCE" size={14} />
               <BenefitText>Wide Reach</BenefitText>
             </BenefitItem>
             <BenefitItem>
-              <Shield color="#FF8F10" size={14} />
+              <Shield color="#8B3FCE" size={14} />
               <BenefitText>Secure Sale</BenefitText>
             </BenefitItem>
             <BenefitItem>
-              <Zap color="#FF8F10" size={14} />
+              <Zap color="#8B3FCE" size={14} />
               <BenefitText>Quick Sale</BenefitText>
             </BenefitItem>
           </BenefitsList>

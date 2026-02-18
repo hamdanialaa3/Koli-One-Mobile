@@ -66,7 +66,7 @@ const MIN_SAMPLE_SIZE_MEDIUM = 5;
 class PriceEstimatorService {
   private static instance: PriceEstimatorService;
 
-  private constructor() {}
+  private constructor() { }
 
   public static getInstance(): PriceEstimatorService {
     if (!PriceEstimatorService.instance) {

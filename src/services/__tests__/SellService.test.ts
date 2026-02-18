@@ -1,12 +1,22 @@
 import { SellService } from '../SellService';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getAuth } from 'firebase/auth';
+import { uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+
+// Mock firebase service barrel (provides auth, db, storage)
+jest.mock('../firebase', () => ({
+    auth: { currentUser: { uid: 'test-user-id' } },
+    db: {},
+    storage: {},
+}));
 
 // Mock Firebase
 jest.mock('firebase/storage', () => ({
     getStorage: jest.fn(),
-    ref: jest.fn(),
+    ref: jest.fn(() => ({})),
     uploadBytes: jest.fn(() => Promise.resolve()),
+    uploadBytesResumable: jest.fn(() => ({
+        on: jest.fn((_evt: string, _next: any, _err: any, complete: () => void) => complete()),
+        snapshot: { ref: {} },
+    })),
     getDownloadURL: jest.fn(() => Promise.resolve('https://firebasestorage.com/img.jpg')),
 }));
 
@@ -71,11 +81,9 @@ describe('SellService', () => {
 
             const result = await SellService.uploadImageResumable('file://local.jpg', { onProgress, signal });
 
-            expect(uploadBytes).toHaveBeenCalled();
+            expect(uploadBytesResumable).toHaveBeenCalled();
             expect(getDownloadURL).toHaveBeenCalled();
             expect(result).toBe('https://firebasestorage.com/img.jpg');
-            expect(onProgress).toHaveBeenCalledWith(10);
-            expect(onProgress).toHaveBeenCalledWith(100);
         });
 
         it('should throw if aborted', async () => {

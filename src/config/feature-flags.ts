@@ -77,7 +77,7 @@ export const FEATURE_FLAGS = {
     // ==========================================
 
     /** Enable AI Car Advisor chatbot */
-    AI_ADVISOR: false,
+    AI_ADVISOR: true,
 
     /** Enable auction feature */
     AUCTIONS: false,

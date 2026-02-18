@@ -8,6 +8,7 @@ import { Platform } from 'react-native';
 import styled from 'styled-components/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Sparkles, Camera, Zap, CheckCircle } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 import { theme } from '../../styles/theme';
 
 const Container = styled(LinearGradient).attrs({
@@ -18,15 +19,15 @@ const Container = styled(LinearGradient).attrs({
   padding: 24px 16px;
   margin: 16px 0;
   border-radius: 20px;
-  ${Platform.OS === 'web' ? {
-    boxShadow: '0px 8px 20px rgba(139, 92, 246, 0.3)'
-  } : {
-    shadowColor: '#8b5cf6',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    elevation: 8
-  }}
+  ${Platform.OS === 'web' ? `
+    box-shadow: 0px 8px 20px rgba(139, 92, 246, 0.3);
+  ` : `
+    shadow-color: #8b5cf6;
+    shadow-offset: 0px 8px;
+    shadow-opacity: 0.3;
+    shadow-radius: 20px;
+    elevation: 8;
+  `}
 `;
 
 const Header = styled.View`
@@ -124,6 +125,8 @@ const CTAText = styled.Text`
 `;
 
 export default function AIAnalysisBanner() {
+  const router = useRouter();
+
   return (
     <Container colors={['#8b5cf6', '#6366f1']}>
       <Header>
@@ -174,7 +177,7 @@ export default function AIAnalysisBanner() {
         </StepCard>
       </StepsContainer>
 
-      <CTAButton>
+      <CTAButton onPress={() => router.push('/ai/analysis')}>
         <Camera color="#8b5cf6" size={20} />
         <CTAText>Try AI Analysis Now</CTAText>
       </CTAButton>

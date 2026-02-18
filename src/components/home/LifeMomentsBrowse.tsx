@@ -8,7 +8,7 @@ import React from 'react';
 import styled from 'styled-components/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Users, Briefcase, Mountain, Leaf, Building2, Crown } from 'lucide-react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { theme } from '../../styles/theme';
 import { ScrollView, Platform } from 'react-native';
 
@@ -140,15 +140,15 @@ const MomentCard = styled.Pressable<{ gradient: string }>`
   justify-content: center;
   border-width: 1px;
   border-color: rgba(255, 255, 255, 0.2);
-  ${({ gradient }) => Platform.OS === 'web' ? {
-    boxShadow: `0px 8px 24px ${gradient}66`
-  } : {
-    shadowColor: gradient,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 8
-  }}
+  ${({ gradient }) => Platform.OS === 'web' ? `
+    box-shadow: 0px 8px 24px ${gradient}66;
+  ` : `
+    shadow-color: ${gradient};
+    shadow-offset: 0px 8px;
+    shadow-opacity: 0.3;
+    shadow-radius: 16px;
+    elevation: 8;
+  `}
 `;
 
 const IconWrapper = styled.View`
@@ -171,11 +171,10 @@ const CardTitle = styled.Text`
 `;
 
 export default function LifeMomentsBrowse() {
-  const navigation = useNavigation();
+  const router = useRouter();
 
   const handleMomentPress = (moment: LifeMoment) => {
-    // @ts-ignore - navigation typing
-    navigation.navigate('Search', { query: moment.searchQuery });
+    router.push({ pathname: '/(tabs)/search', params: { query: moment.searchQuery } });
   };
 
   return (

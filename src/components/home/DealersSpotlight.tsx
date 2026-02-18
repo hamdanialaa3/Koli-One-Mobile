@@ -113,7 +113,7 @@ export default function DealersSpotlight() {
       </Header>
       <ScrollContent horizontal showsHorizontalScrollIndicator={false}>
         {dealers.map((dealer) => (
-          <DealerCard key={dealer.id} onPress={() => router.push(`/profile/${dealer.id}` as any)}>
+          <DealerCard key={dealer.id} onPress={() => router.push({ pathname: '/dealer/[slug]', params: { slug: dealer.id } })}>
             <View style={{ alignItems: 'center' }}>
               <DealerLogoPlaceholder>
                 <Ionicons name="business" size={24} color="#00f3ff" />
