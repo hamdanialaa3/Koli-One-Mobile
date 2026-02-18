@@ -1,71 +1,25 @@
+// app/(tabs)/profile.tsx
+// Fixed Web Blank Screen & Iframe Issue
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { GoogleAuthProvider, FacebookAuthProvider, signInWithCredential, signInWithPopup } from 'firebase/auth';
-import { auth } from '../../src/services/firebase';
 import { useAuth } from '../../src/contexts/AuthContext';
 import { theme } from '../../src/styles/theme';
 import { Ionicons } from '@expo/vector-icons';
 import MobileHeader from '../../src/components/common/MobileHeader';
-import { Alert, ActivityIndicator, View, Linking, Platform, ScrollView, TouchableOpacity } from 'react-native';
+import { Alert, ActivityIndicator, View, Linking, Platform, ScrollView, TouchableOpacity, Text, Dimensions } from 'react-native';
 import { PlatformSyncService } from '../../src/services/PlatformSyncService';
 import { SOCIAL_LINKS } from '../../src/constants/SocialLinks';
-import { useRouter } from 'expo-router';
-import { GoogleLoginButton } from '../../src/components/auth/GoogleLoginButton';
-import { FacebookLoginButton } from '../../src/components/auth/FacebookLoginButton';
+import { useRouter, Stack } from 'expo-router';
 import { logger } from '../../src/services/logger-service';
 
-const Container = styled.SafeAreaView`
-  flex: 1;
-  background-color: ${props => props.theme.colors.background.default};
-`;
+// Use standard Views for layout to guarantee Web rendering
+const MainContainer = ({ children }: { children: React.ReactNode }) => (
+  <View style={{ flex: 1, backgroundColor: theme.colors.background.default, minHeight: Platform.OS === 'web' ? ('100vh' as any) : '100%' }}>
+    {children}
+  </View>
+);
 
-const ContentContainer = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-  padding: ${props => props.theme.spacing.xl};
-`;
-
-const LogoText = styled.Text`
-  font-size: 32px;
-  font-weight: 900;
-  color: ${props => props.theme.colors.primary.main};
-  margin-bottom: 8px;
-`;
-
-const Tagline = styled.Text`
-  font-size: 16px;
-  color: ${props => props.theme.colors.text.secondary};
-  margin-bottom: 48px;
-  text-align: center;
-`;
-
-const LoginCard = styled.View`
-  width: 100%;
-  background-color: ${props => props.theme.colors.background.paper};
-  padding: 32px;
-  border-radius: 24px;
-  elevation: 10;
-  ${Platform.OS !== 'web' ? `
-    shadow-color: #000;
-    shadow-offset: 0px 10px;
-    shadow-opacity: 0.1;
-    shadow-radius: 20px;
-  ` : `
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
-  `}
-  align-items: center;
-`;
-
-const WelcomeText = styled.Text`
-  font-size: 20px;
-  font-weight: 700;
-  color: ${props => props.theme.colors.text.primary};
-  margin-bottom: 24px;
-`;
-
-// --- Authenticated Header ---
+// --- Authenticated Components (Styled ok for inner content) ---
 
 const ProfileHeader = styled.View`
   padding: 24px;
@@ -196,10 +150,6 @@ const MenuList = styled.ScrollView`
   background-color: ${props => props.theme.colors.background.paper};
 `;
 
-const MenuGroup = styled.View`
-  margin-bottom: 24px;
-`;
-
 const MenuHeader = styled.Text`
   font-size: 12px;
   font-weight: 700;
@@ -260,7 +210,7 @@ export default function ProfileScreen() {
     activeListings: 0,
     totalViews: 0,
     totalMessages: 0,
-    trustScore: 10 // Mock default
+    trustScore: 0
   });
 
   useEffect(() => {
@@ -272,105 +222,115 @@ export default function ProfileScreen() {
     }
   }, [user]);
 
-  const handleGoogleLogin = async () => {
-    try {
-      if (Platform.OS === 'web') {
-        const provider = new GoogleAuthProvider();
-        if (auth) {
-          await signInWithPopup(auth, provider);
-        }
-      } else {
-        await GoogleSignin.hasPlayServices();
-        const userInfo = await GoogleSignin.signIn();
-        const idToken = (userInfo as any).data?.idToken || (userInfo as any).idToken;
-
-        if (idToken) {
-          const credential = GoogleAuthProvider.credential(idToken);
-          if (auth) {
-            await signInWithCredential(auth, credential);
-          }
-        }
-      }
-    } catch (error: any) {
-      logger.error("Login Error:", error);
-      Alert.alert("Login Failed", error.message);
-    }
-  };
-
-  const handleFacebookLogin = async () => {
-    try {
-      if (Platform.OS === 'web') {
-        const provider = new FacebookAuthProvider();
-        if (auth) {
-          await signInWithPopup(auth, provider);
-        }
-      } else {
-        Alert.alert("Social Login", "Facebook Login on mobile is being updated for maximum security.");
-      }
-    } catch (error: any) {
-      logger.error("Facebook Login Error:", error);
-      Alert.alert("Login Failed", error.message);
-    }
-  };
-
   const menuItems = [
     {
-      title: 'Dashboard',
+      title: 'Management',
       items: [
-        { label: 'Executive Stats', icon: 'grid-outline', route: '/profile/dashboard' },
-        { label: 'My Ads', icon: 'car-sport-outline', route: '/profile/my-ads' },
-        { label: 'My Drafts', icon: 'document-text-outline', route: '/profile/drafts' },
-        { label: 'Social Feed', icon: 'people-outline', route: '/social' },
+        { label: 'My Ads', icon: 'list', route: '/profile/my-ads' },
+        { label: 'My Garage', icon: 'car-sport-outline', route: '/garage' },
+        { label: 'Drafts', icon: 'document-text-outline', route: '/profile/drafts' },
+        { label: 'Favorites', icon: 'heart-outline', route: '/profile/favorites' },
+        { label: 'Saved Searches', icon: 'bookmark-outline', route: '/saved-searches' },
+        { label: 'My Reviews', icon: 'star-outline', route: '/my-reviews' },
       ]
     },
     {
-      title: 'Activity',
+      title: 'Analytics',
       items: [
-        { label: 'My Reviews', icon: 'star-outline', route: '/my-reviews' },
-        { label: 'Favorites', icon: 'heart-outline', route: '/profile/favorites' },
-        { label: 'Saved Searches', icon: 'search-outline', route: '/profile/saved-searches' },
-        { label: 'Consultations', icon: 'chatbubbles-outline', route: '/profile/consultations' },
-        { label: 'Analytics', icon: 'bar-chart-outline', route: '/profile/analytics' },
+        { label: 'Dashboard', icon: 'bar-chart-outline', route: '/profile/dashboard' },
+        { label: 'Performance', icon: 'trending-up-outline', route: '/profile/analytics' },
         { label: 'Campaigns', icon: 'megaphone-outline', route: '/profile/campaigns' },
       ]
     },
     {
-      title: 'Account & Community',
+      title: 'AI Tools',
       items: [
-        { label: 'User Directory', icon: 'people-circle-outline', route: '/profile/users' },
+        { label: 'AI Advisor', icon: 'sparkles-outline', route: '/ai/advisor' },
+        { label: 'Car Valuation', icon: 'calculator-outline', route: '/ai/valuation' },
+        { label: 'AI History', icon: 'time-outline', route: '/ai/history' },
+      ]
+    },
+    {
+      title: 'Discover',
+      items: [
+        { label: 'Events', icon: 'calendar-outline', route: '/events' },
+        { label: 'Auctions', icon: 'hammer-outline', route: '/auctions' },
+        { label: 'Stories', icon: 'film-outline', route: '/stories' },
+        { label: 'Cars Near Me', icon: 'map-outline', route: '/map-search' },
+        { label: 'Blog & News', icon: 'newspaper-outline', route: '/blog' },
+        { label: 'Financing', icon: 'cash-outline', route: '/finance' },
+        { label: 'Community', icon: 'people-outline', route: '/social' },
+        { label: 'Compare Cars', icon: 'git-compare-outline', route: '/compare' },
+        { label: 'Top Brands', icon: 'trophy-outline', route: '/top-brands' },
+      ]
+    },
+    {
+      title: 'Account',
+      items: [
         { label: 'Settings', icon: 'settings-outline', route: '/profile/settings' },
+        { label: 'Billing', icon: 'card-outline', route: '/profile/billing' },
+        { label: 'Subscription', icon: 'diamond-outline', route: '/profile/subscription' },
+        { label: 'Following', icon: 'people-circle-outline', route: '/profile/following' },
         { label: 'Help & Support', icon: 'help-circle-outline', route: '/help' },
-        { label: 'About Koli One', icon: 'information-circle-outline', route: '/about' },
       ]
     }
   ];
 
   if (loading) {
     return (
-      <Container theme={theme} style={{ justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color={theme.colors.primary.main} />
-      </Container>
+      <MainContainer>
+        <Stack.Screen options={{ headerShown: false }} />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color={theme.colors.primary.main} />
+        </View>
+      </MainContainer>
     );
   }
 
+  // --- GUEST VIEW (Not Logged In) ---
   if (!user) {
     return (
-      <Container theme={theme}>
-        <ContentContainer theme={theme}>
-          <LogoText theme={theme}>Koli One</LogoText>
-          <Tagline theme={theme}>The Premium Marketplace</Tagline>
-          <LoginCard theme={theme}>
-            <WelcomeText theme={theme}>Join Koli One</WelcomeText>
-            <GoogleLoginButton onPress={handleGoogleLogin} />
-            <FacebookLoginButton onPress={handleFacebookLogin} />
-          </LoginCard>
-        </ContentContainer>
-      </Container>
+      <MainContainer>
+        <Stack.Screen options={{ headerShown: false }} />
+        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 24, minHeight: 500 }}>
+          <View style={{ alignItems: 'center', backgroundColor: theme.colors.background.paper, padding: 32, borderRadius: 24, ...Platform.select({ ios: { shadowColor: '#000', shadowOffset: { height: 4, width: 0 }, shadowOpacity: 0.1, shadowRadius: 10 }, android: { elevation: 5 }, default: { boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' } }) }}>
+            <Text style={{ fontSize: 28, fontWeight: '800', color: theme.colors.primary.main, marginBottom: 12 }}>Koli One</Text>
+            <Text style={{ fontSize: 16, color: theme.colors.text.secondary, textAlign: 'center', marginBottom: 32 }}>
+              Log in to manage your ads, view analytics, and access commander features.
+            </Text>
+
+            <TouchableOpacity
+              onPress={() => router.push('/(auth)/login')}
+              style={{
+                width: '100%',
+                backgroundColor: theme.colors.primary.main,
+                paddingVertical: 16,
+                borderRadius: 50,
+                alignItems: 'center',
+                ...Platform.select({
+                  ios: { shadowColor: theme.colors.primary.main, shadowOffset: { height: 4, width: 0 }, shadowOpacity: 0.3, shadowRadius: 8 },
+                  android: { elevation: 4 },
+                  default: { boxShadow: '0px 4px 8px rgba(230, 80, 0, 0.3)' },
+                }),
+                marginBottom: 16
+              }}
+            >
+              <Text style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>Sign In / Register</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => router.push('/help')}>
+              <Text style={{ color: theme.colors.text.secondary, fontSize: 14 }}>Need Help?</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </MainContainer>
     );
   }
 
+  // --- LOGGED IN VIEW ---
   return (
-    <Container theme={theme}>
+    <MainContainer>
+      <Stack.Screen options={{ headerShown: false }} />
       <MobileHeader title="Command Center" showLogo={false} />
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -421,7 +381,6 @@ export default function ProfileScreen() {
             <StatLabel theme={theme}>Views</StatLabel>
           </StatItem>
           <StatItem>
-            {/* Trust Score Mock (Web Parity) */}
             <StatValue theme={theme}>{stats.trustScore}%</StatValue>
             <StatLabel theme={theme}>Trust Score</StatLabel>
           </StatItem>
@@ -476,7 +435,6 @@ export default function ProfileScreen() {
 
         <View style={{ height: 20 }} />
       </ScrollView>
-
-    </Container>
+    </MainContainer>
   );
 }

@@ -34,7 +34,7 @@ const SearchInputRow = styled.View`
   align-items: center;
   background-color: ${props => props.theme.colors.background.default};
   border-radius: 12px;
-  padding: 0 12px;
+    padding: 0px 12px;
   height: 48px;
 `;
 
@@ -146,7 +146,7 @@ export default function UsersDirectoryScreen() {
                     data={filteredUsers}
                     keyExtractor={item => item.id}
                     renderItem={({ item }) => (
-                        <UserCard theme={theme} onPress={() => router.push(`/profile/${item.id}` as any)}>
+                        <UserCard theme={theme} onPress={() => router.push({ pathname: '/profile/[id]', params: { id: item.id } })}>
                             <Avatar source={{ uri: item.photoURL || `https://ui-avatars.com/api/?name=${item.displayName}&background=random` }} />
                             <UserInfo>
                                 <UserName theme={theme}>{item.displayName}</UserName>
@@ -166,6 +166,14 @@ export default function UsersDirectoryScreen() {
                         </UserCard>
                     )}
                     contentContainerStyle={{ paddingVertical: 10 }}
+                    ListEmptyComponent={
+                        <View style={{ alignItems: 'center', paddingTop: 60, gap: 8 }}>
+                            <Ionicons name="people-outline" size={48} color="#ccc" />
+                            <Text style={{ color: '#999', fontSize: 16 }}>
+                                {search ? 'Няма намерени потребители' : 'Няма потребители'}
+                            </Text>
+                        </View>
+                    }
                 />
             )}
         </Container>

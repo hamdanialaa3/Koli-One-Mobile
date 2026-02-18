@@ -139,4 +139,106 @@ export class MessagingService {
             unsub();
         };
     }
+
+    // ── Typing Indicators ──────────────────────────────────────────
+
+    /**
+     * Set current user's typing status in a channel.
+     * Writes to `typing/{channelId}/{userId}` with a timestamp.
+     * Call with `isTyping = false` or let a timeout clear it.
+     */
+    static async setTyping(channelId: string, isTyping: boolean): Promise<void> {
+        if (!auth.currentUser) return;
+        const uid = auth.currentUser.uid;
+        const typingRef = ref(rtdb, `typing/${channelId}/${uid}`);
+        if (isTyping) {
+            await set(typingRef, { typing: true, ts: serverTimestamp() });
+        } else {
+            await set(typingRef, null);
+        }
+    }
+
+    /**
+     * Subscribe to typing status for a given channel.
+     * Calls back with an array of user UIDs currently typing.
+     */
+    static subscribeToTyping(
+        channelId: string,
+        callback: (typingUids: string[]) => void
+    ) {
+        const typingRef = ref(rtdb, `typing/${channelId}`);
+        return onValue(typingRef, (snapshot) => {
+            if (!snapshot.exists()) { callback([]); return; }
+            const data = snapshot.val() as Record<string, { typing: boolean; ts: number }>;
+            const now = Date.now();
+            const active = Object.entries(data)
+                .filter(([, v]) => v.typing && (now - (v.ts || 0)) < 15_000) // 15s timeout
+                .map(([uid]) => uid);
+            callback(active);
+        });
+    }
+
+    // ── Read Receipts ──────────────────────────────────────────────
+
+    /**
+     * Mark all unread messages in a channel as read for the current user.
+     * Updates `read: true` and `status: 'read'` on each message not sent by this user.
+     */
+    static async markAsRead(channelId: string): Promise<void> {
+        if (!auth.currentUser) return;
+        const uid = auth.currentUser.uid;
+
+        const msgsRef = query(
+            ref(rtdb, `messages/${channelId}`),
+            orderByChild('timestamp'),
+            limitToLast(100)
+        );
+        const snapshot = await get(msgsRef);
+        if (!snapshot.exists()) return;
+
+        const updates: Record<string, any> = {};
+        snapshot.forEach((child) => {
+            const msg = child.val();
+            if (msg.senderFirebaseId !== uid && !msg.read) {
+                updates[`messages/${channelId}/${child.key}/read`] = true;
+                updates[`messages/${channelId}/${child.key}/status`] = 'read';
+                updates[`messages/${channelId}/${child.key}/readAt`] = serverTimestamp();
+            }
+        });
+
+        if (Object.keys(updates).length > 0) {
+            const rootRef = ref(rtdb);
+            await update(rootRef, updates);
+        }
+    }
+
+    // ── Offer Accept / Reject ──────────────────────────────────────
+
+    /**
+     * Send a system message recording offer acceptance or rejection.
+     */
+    static async respondToOffer(
+        channelId: string,
+        originalMessageId: string,
+        action: 'accept' | 'reject',
+        senderNumericId: number,
+        recipientNumericId: number,
+    ): Promise<void> {
+        if (!auth.currentUser) throw new Error('Auth required');
+
+        // Mark the original offer message
+        const offerRef = ref(rtdb, `messages/${channelId}/${originalMessageId}`);
+        await update(offerRef, { offerStatus: action });
+
+        // Send a system message
+        const label = action === 'accept' ? 'прие офертата' : 'отхвърли офертата';
+        await MessagingService.sendMessage(channelId, {
+            content: `${auth.currentUser.displayName || 'Потребител'} ${label}.`,
+            type: 'system',
+            senderId: senderNumericId,
+            senderFirebaseId: auth.currentUser.uid,
+            recipientId: recipientNumericId,
+            recipientFirebaseId: '', // filled by caller if needed
+        });
+    }
 }

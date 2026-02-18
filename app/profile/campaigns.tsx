@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/native';
 import { MobileHeader } from '../../src/components/common/MobileHeader';
 import { theme } from '../../src/styles/theme';
-import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
+import { View, ScrollView, TouchableOpacity, Text, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { db, auth } from '../../src/services/firebase';
+import { collection, query, where, orderBy, onSnapshot, addDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
 
 const Container = styled.SafeAreaView`
   flex: 1;
@@ -94,11 +96,29 @@ const StatusText = styled.Text<{ active?: boolean }>`
 
 export default function CampaignsScreen() {
   const router = useRouter();
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const mockCampaigns = [
-    { id: '1', name: 'Premium Highlight', target: 'Audi RS6 Avant', status: 'Active', active: true },
-    { id: '2', name: 'Homepage Slider', target: 'Mercedes-Benz G63', status: 'Completed', active: false },
-  ];
+  useEffect(() => {
+    if (!auth.currentUser) { setLoading(false); return; }
+    const q = query(
+      collection(db, 'campaigns'),
+      where('userId', '==', auth.currentUser.uid),
+      orderBy('createdAt', 'desc')
+    );
+    const unsub = onSnapshot(q, (snap) => {
+      setCampaigns(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setLoading(false);
+    }, () => setLoading(false));
+    return unsub;
+  }, []);
+
+  const handleDelete = (id: string) => {
+    Alert.alert('Изтриване', 'Сигурни ли сте?', [
+      { text: 'Отказ', style: 'cancel' },
+      { text: 'Изтрий', style: 'destructive', onPress: () => deleteDoc(doc(db, 'campaigns', id)) },
+    ]);
+  };
 
   return (
     <Container theme={theme}>
@@ -109,28 +129,36 @@ export default function CampaignsScreen() {
           <Glow />
           <PromoTitle>Boost Your Sales</PromoTitle>
           <PromoText>Reach 10x more potential buyers by highlighting your listings in premium slots.</PromoText>
-          <CreateBtn theme={theme} onPress={() => router.push('/sell' as any)}>
+          <CreateBtn theme={theme} onPress={() => router.push('/(tabs)/sell' as any)}>
             <CreateBtnText theme={theme}>New Campaign</CreateBtnText>
           </CreateBtn>
         </PromoCard>
 
         <SectionTitle>My Campaigns</SectionTitle>
         <CampaignList>
-          {mockCampaigns.map(cp => (
-            <CampaignItem key={cp.id} theme={theme}>
-              <View style={{ width: 44, height: 44, borderRadius: 10, backgroundColor: theme.colors.background.default, justifyContent: 'center', alignItems: 'center' }}>
-                <Ionicons name="megaphone-outline" size={24} color={theme.colors.primary.main} />
-              </View>
-              <View style={{ flex: 1, marginLeft: 16 }}>
-                <Text style={{ fontWeight: '700', fontSize: 16, color: theme.colors.text.primary }}>{cp.name}</Text>
-                <Text style={{ fontSize: 12, color: theme.colors.text.secondary }}>Target: {cp.target}</Text>
-                <StatusBadge theme={theme} active={cp.active}>
-                  <StatusText theme={theme} active={cp.active}>{cp.status}</StatusText>
-                </StatusBadge>
-              </View>
-              <Ionicons name="ellipsis-vertical" size={20} color={theme.colors.text.disabled} />
-            </CampaignItem>
-          ))}
+          {loading ? (
+            <ActivityIndicator size="large" color={theme.colors.primary.main} />
+          ) : campaigns.length === 0 ? (
+            <Text style={{ textAlign: 'center', color: theme.colors.text.secondary, marginTop: 20 }}>Няма кампании все още</Text>
+          ) : (
+            campaigns.map(cp => (
+              <CampaignItem key={cp.id} theme={theme}>
+                <View style={{ width: 44, height: 44, borderRadius: 10, backgroundColor: theme.colors.background.default, justifyContent: 'center', alignItems: 'center' }}>
+                  <Ionicons name="megaphone-outline" size={24} color={theme.colors.primary.main} />
+                </View>
+                <View style={{ flex: 1, marginLeft: 16 }}>
+                  <Text style={{ fontWeight: '700', fontSize: 16, color: theme.colors.text.primary }}>{cp.name || 'Campaign'}</Text>
+                  <Text style={{ fontSize: 12, color: theme.colors.text.secondary }}>Target: {cp.target || '-'}</Text>
+                  <StatusBadge theme={theme} active={cp.status === 'active'}>
+                    <StatusText theme={theme} active={cp.status === 'active'}>{cp.status || 'pending'}</StatusText>
+                  </StatusBadge>
+                </View>
+                <TouchableOpacity onPress={() => handleDelete(cp.id)}>
+                  <Ionicons name="trash-outline" size={20} color={theme.colors.status.error} />
+                </TouchableOpacity>
+              </CampaignItem>
+            ))
+          )}
         </CampaignList>
 
         <View style={{ height: 40 }} />

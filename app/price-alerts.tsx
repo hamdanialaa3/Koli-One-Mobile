@@ -210,7 +210,7 @@ export default function PriceAlertsScreen() {
         }
 
         // Navigate to car details
-        router.push(`/car/${alert.carId}`);
+        router.push({ pathname: '/car/[id]', params: { id: alert.carId } });
     };
 
     const handleMarkAllRead = async () => {

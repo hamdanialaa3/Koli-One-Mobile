@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { View, ScrollView, ActivityIndicator, Platform, TouchableOpacity, Share } from 'react-native';
+import { View, ScrollView, ActivityIndicator, Platform, TouchableOpacity, Share, Modal, Switch, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../src/styles/theme';
 import { MobileHeader } from '../../src/components/common/MobileHeader';
@@ -10,6 +10,8 @@ import { getUserProfile } from '../../src/services/userService';
 import { CarCard } from '../../src/components/CarCard';
 import { useAuth } from '../../src/contexts/AuthContext';
 import { logger } from '../../src/services/logger-service';
+import { doc, getDoc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../src/services/firebase';
 
 const Container = styled.SafeAreaView`
   flex: 1;
@@ -36,6 +38,7 @@ const GlowCircle = styled.View`
   background-color: ${props => props.theme.colors.primary.main};
   opacity: 0.05;
 `;
+
 
 const AvatarContainer = styled.View`
   position: relative;
@@ -147,8 +150,64 @@ const SectionTitle = styled.Text`
 `;
 
 const ListingsGrid = styled.View`
-  padding: 0 20px 40px;
+  padding: 0px 20px 40px;
   gap: 16px;
+`;
+
+const SettingsBackdrop = styled.View`
+  flex: 1;
+  background-color: rgba(0, 0, 0, 0.45);
+  justify-content: flex-end;
+`;
+
+const SettingsSheet = styled.View`
+  background-color: ${props => props.theme.colors.background.paper};
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding: 20px;
+`;
+
+const SettingsTitle = styled.Text`
+  font-size: 18px;
+  font-weight: 800;
+  color: ${props => props.theme.colors.text.primary};
+  margin-bottom: 16px;
+`;
+
+const SettingsRow = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0px;
+`;
+
+const SettingsLabel = styled.Text`
+  font-size: 14px;
+  color: ${props => props.theme.colors.text.primary};
+`;
+
+const LanguageRow = styled.View`
+  flex-direction: row;
+  gap: 10px;
+`;
+
+const LanguageChip = styled.TouchableOpacity<{ $active?: boolean }>`
+  padding: 8px 12px;
+  border-radius: 12px;
+  border-width: 1px;
+  border-color: ${props => (props.$active ? props.theme.colors.primary.main : props.theme.colors.border.muted)};
+  background-color: ${props => (props.$active ? `${props.theme.colors.primary.main}22` : 'transparent')};
+`;
+
+const LanguageChipText = styled.Text`
+  font-size: 13px;
+  font-weight: 700;
+  color: ${props => props.theme.colors.text.primary};
+`;
+
+const CloseButton = styled.TouchableOpacity`
+  margin-top: 12px;
+  align-self: flex-end;
 `;
 
 export default function PublicProfileScreen() {
@@ -158,6 +217,11 @@ export default function PublicProfileScreen() {
     const [profile, setProfile] = useState<any>(null);
     const [listings, setListings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [settingsOpen, setSettingsOpen] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [language, setLanguage] = useState<'bg' | 'en'>('en');
+    const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+    const [appSoundsEnabled, setAppSoundsEnabled] = useState(true);
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -192,7 +256,15 @@ export default function PublicProfileScreen() {
     if (loading) {
         return (
             <Container theme={theme}>
-                <MobileHeader title="Profile" back />
+          <MobileHeader
+            title="Profile"
+            back
+            rightComponent={
+              <TouchableOpacity onPress={() => setSettingsOpen(true)}>
+                <Ionicons name="settings-outline" size={22} color={theme.colors.text.primary} />
+              </TouchableOpacity>
+            }
+          />
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                     <ActivityIndicator size="large" color={theme.colors.primary.main} />
                 </View>
@@ -202,7 +274,15 @@ export default function PublicProfileScreen() {
 
     return (
         <Container theme={theme}>
-            <MobileHeader title={profile?.displayName || "Profile"} back />
+        <MobileHeader
+          title={profile?.displayName || "Profile"}
+          back
+          rightComponent={
+            <TouchableOpacity onPress={() => setSettingsOpen(true)}>
+              <Ionicons name="settings-outline" size={22} color={theme.colors.text.primary} />
+            </TouchableOpacity>
+          }
+        />
             <ScrollView showsVerticalScrollIndicator={false}>
                 <CommanderHero theme={theme}>
                     <GlowCircle theme={theme} />
@@ -232,11 +312,28 @@ export default function PublicProfileScreen() {
                 </StatsRow>
 
                 <ActionButtons>
-                    <PrimaryButton theme={theme}>
+                    <PrimaryButton theme={theme} onPress={async () => {
+                        if (!currentUser) { Alert.alert('Вход', 'Влезте в профила си, за да следвате.'); return; }
+                        if (currentUser.uid === id) return;
+                        try {
+                            const followRef = doc(db, `users/${currentUser.uid}/following/${id}`);
+                            const snap = await getDoc(followRef);
+                            if (snap.exists()) {
+                                await deleteDoc(followRef);
+                                Alert.alert('Готово', 'Спряхте да следвате този потребител.');
+                            } else {
+                                await setDoc(followRef, { followedAt: serverTimestamp() });
+                                Alert.alert('Готово', 'Следвате този потребител.');
+                            }
+                        } catch (err) {
+                            logger.error('Follow toggle failed', err);
+                            Alert.alert('Грешка', 'Неуспешно следване.');
+                        }
+                    }}>
                         <Ionicons name="add-circle-outline" size={20} color="#fff" />
-                        <ButtonText>Follow User</ButtonText>
+                        <ButtonText>Следвай</ButtonText>
                     </PrimaryButton>
-                    <SecondaryButton theme={theme} onPress={() => router.push(`/messages/${id}` as any)}>
+                    <SecondaryButton theme={theme} onPress={() => router.push({ pathname: '/chat/[id]', params: { id: id as string } })}>
                         <Ionicons name="chatbubble-outline" size={22} color={theme.colors.text.primary} />
                     </SecondaryButton>
                     <SecondaryButton theme={theme} onPress={handleShare}>
@@ -257,6 +354,51 @@ export default function PublicProfileScreen() {
                     )}
                 </ListingsGrid>
             </ScrollView>
+
+              <Modal
+                visible={settingsOpen}
+                transparent
+                animationType="slide"
+                onRequestClose={() => setSettingsOpen(false)}
+              >
+                <SettingsBackdrop>
+                  <SettingsSheet theme={theme}>
+                    <SettingsTitle theme={theme}>Настройки</SettingsTitle>
+                    <SettingsRow>
+                      <SettingsLabel theme={theme}>Тъмен / Светъл режим</SettingsLabel>
+                      <Switch
+                        value={isDarkMode}
+                        onValueChange={setIsDarkMode}
+                      />
+                    </SettingsRow>
+                    <SettingsRow>
+                      <SettingsLabel theme={theme}>Език</SettingsLabel>
+                      <LanguageRow>
+                        <LanguageChip theme={theme} $active={language === 'bg'} onPress={() => setLanguage('bg')}>
+                          <LanguageChipText theme={theme}>Български</LanguageChipText>
+                        </LanguageChip>
+                        <LanguageChip theme={theme} $active={language === 'en'} onPress={() => setLanguage('en')}>
+                          <LanguageChipText theme={theme}>English</LanguageChipText>
+                        </LanguageChip>
+                      </LanguageRow>
+                    </SettingsRow>
+                    <SettingsRow>
+                      <SettingsLabel theme={theme}>Известия</SettingsLabel>
+                      <Switch
+                        value={notificationsEnabled}
+                        onValueChange={setNotificationsEnabled}
+                      />
+                    </SettingsRow>
+                    <SettingsRow>
+                      <SettingsLabel theme={theme}>Звуци</SettingsLabel>
+                      <Switch value={appSoundsEnabled} onValueChange={setAppSoundsEnabled} />
+                    </SettingsRow>
+                    <CloseButton onPress={() => setSettingsOpen(false)}>
+                      <SettingsLabel theme={theme}>Затвори</SettingsLabel>
+                    </CloseButton>
+                  </SettingsSheet>
+                </SettingsBackdrop>
+              </Modal>
         </Container>
     );
 }

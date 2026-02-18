@@ -40,9 +40,9 @@ const ContentWrapper = styled.View`
 export default function HeroSection() {
   return (
     <HeroContainer>
-      {/* Cinematic Background - Placeholder for "Gemini_Generated_Image..." */}
+      {/* Cinematic Background */}
       <BackgroundImage
-        source={{ uri: 'https://images.unsplash.com/photo-1493238792015-164369288140?auto=format&fit=crop&w=1000&q=80' }}
+        source={require('../../../assets/images/placeholder-car.png')}
         resizeMode="cover"
       >
         <Overlay />

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/native';
+import { logger } from '../../services/logger-service';
 import { ScrollView, ActivityIndicator, View } from 'react-native';
 import { theme } from '../../styles/theme';
 import { PlatformSyncService } from '../../services/PlatformSyncService';
@@ -65,7 +66,7 @@ export default function RecentBrowsingSection() {
                 const fetchedListings = await ListingService.getListingsByIds(ids);
                 setHistory(fetchedListings);
             } catch (error) {
-                console.error("Failed to load history", error);
+                logger.error('Failed to load history', error);
             }
         }
         setLoading(false);
@@ -81,7 +82,7 @@ export default function RecentBrowsingSection() {
             <Container theme={theme}>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 24 }}>
                     {[1, 2].map(i => (
-                        <View key={i} style={{ width: '280px' as any, marginRight: 24 }}>
+                        <View key={i} style={{ width: 280, marginRight: 24 }}>
                             <SkeletonListingCard />
                         </View>
                     ))}
@@ -110,7 +111,7 @@ export default function RecentBrowsingSection() {
                 contentContainerStyle={{ paddingRight: 24 }}
             >
                 {history.map((car) => (
-                    <View key={car.id} style={{ marginLeft: 24, width: '280px' as any }}>
+                    <View key={car.id} style={{ width: 280, marginLeft: 24 }}>
                         <CarCard listing={car} />
                     </View>
                 ))}

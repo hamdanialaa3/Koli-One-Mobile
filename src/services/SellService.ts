@@ -1,6 +1,6 @@
 import { db, auth, storage } from './firebase';
 import { collection, addDoc, serverTimestamp, doc, setDoc, query, where, getDocs, limit } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { VehicleFormData } from '../types/sellTypes';
 import { logger } from './logger-service';
 import { retry } from '../utils/retry';
@@ -79,10 +79,7 @@ export class SellService {
         if (!auth.currentUser) throw new Error("Authentication required");
         if (options.signal.aborted) throw new Error("Aborted");
 
-        // Simulating resumable upload for now as Firebase JS SDK mostly handles this automatically
-        // in a real environment we might use uploadBytesResumable
-
-        try {
+        return retry(async () => {
             if (uri.startsWith('http')) {
                 options.onProgress(100);
                 return uri;
@@ -93,19 +90,40 @@ export class SellService {
             const filename = `listings/${auth.currentUser?.uid}/${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
             const storageRef = ref(storage, filename);
 
-            const uploadTask = uploadBytes(storageRef, blob);
+            return new Promise<string>((resolve, reject) => {
+                const uploadTask = uploadBytesResumable(storageRef, blob);
 
-            // Initial progress
-            options.onProgress(10);
+                // Wire abort signal to cancel the upload
+                const onAbort = () => {
+                    uploadTask.cancel();
+                    reject(new Error('Upload aborted'));
+                };
+                options.signal.addEventListener('abort', onAbort, { once: true });
 
-            await uploadTask;
-            options.onProgress(100);
-
-            return await getDownloadURL(storageRef);
-        } catch (error) {
-            logger.error('Error uploading image resumable', error);
-            throw error;
-        }
+                uploadTask.on(
+                    'state_changed',
+                    (snapshot) => {
+                        const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                        options.onProgress(progress);
+                    },
+                    (error) => {
+                        options.signal.removeEventListener('abort', onAbort);
+                        logger.error('Resumable upload error', error);
+                        reject(error);
+                    },
+                    async () => {
+                        options.signal.removeEventListener('abort', onAbort);
+                        try {
+                            const url = await getDownloadURL(uploadTask.snapshot.ref);
+                            options.onProgress(100);
+                            resolve(url);
+                        } catch (e) {
+                            reject(e);
+                        }
+                    }
+                );
+            });
+        }, 3, 1000);
     }
 }
 

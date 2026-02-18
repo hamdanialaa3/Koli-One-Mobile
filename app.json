@@ -34,6 +34,7 @@
     },
     "android": {
       "package": "com.hamdani.kolione",
+      "versionCode": 1,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
@@ -45,7 +46,34 @@
         "android.permission.INTERNET",
         "android.permission.ACCESS_NETWORK_STATE",
         "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO"
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.VIBRATE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "com.android.vending.BILLING"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "koli.one",
+              "pathPrefix": "/car"
+            },
+            {
+              "scheme": "https",
+              "host": "koli.one",
+              "pathPrefix": "/dealer"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
       ]
     },
     "web": {
@@ -55,6 +83,8 @@
     },
     "plugins": [
       "expo-router",
+      "expo-localization",
+      "expo-secure-store",
       [
         "@react-native-google-signin/google-signin",
         {
@@ -68,13 +98,30 @@
         }
       ],
       [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Koli One to access your photos to upload car images.",
+          "cameraPermission": "Allow Koli One to take photos of cars for listings."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#FF7900",
+          "sounds": []
+        }
+      ],
+      [
         "expo-build-properties",
         {
           "android": {
             "compileSdkVersion": 35,
             "targetSdkVersion": 35,
             "minSdkVersion": 24,
-            "buildToolsVersion": "35.0.0"
+            "buildToolsVersion": "35.0.0",
+            "enableProguardInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true
           },
           "ios": {
             "deploymentTarget": "15.1"
@@ -89,10 +136,10 @@
       "eas": {
         "projectId": "a2efe325-74d5-4772-a200-0d44d16b484e"
       },
-      "firebaseProjectId": "fire-new-globul",
-      "firebaseApiKey": "REPLACE_WITH_FIREBASE_API_KEY",
-      "algoliaAppId": "REPLACE_WITH_ALGOLIA_APP_ID",
-      "algoliaSearchApiKey": "REPLACE_WITH_ALGOLIA_SEARCH_API_KEY",
+      "firebaseProjectId": "",
+      "firebaseApiKey": "",
+      "algoliaAppId": "",
+      "algoliaSearchApiKey": "",
       "algoliaIndexName": "cars",
       "router": {}
     },

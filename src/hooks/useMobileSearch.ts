@@ -42,15 +42,16 @@ export const useMobileSearch = (initialFilters: FilterState = {}) => {
             // Try Algolia first if available (fast search)
             if (algoliaSearchService.isAvailable()) {
                 logger.info('🔍 Using Algolia search');
-                
+
                 // Build Algolia filters from FilterState
                 const algoliaFilters: string[] = [];
                 if (filters.make) algoliaFilters.push(`make:"${filters.make}"`);
                 if (filters.model) algoliaFilters.push(`model:"${filters.model}"`);
                 if (filters.fuelType) algoliaFilters.push(`fuelType:"${filters.fuelType}"`);
                 if (filters.transmission) algoliaFilters.push(`transmission:"${filters.transmission}"`);
+                if (filters.color) algoliaFilters.push(`color:"${filters.color}"`);
                 if (filters.location) algoliaFilters.push(`city:"${filters.location}"`);
-                
+
                 const numericFilters: string[] = [];
                 if (filters.priceMin !== undefined) numericFilters.push(`price >= ${filters.priceMin}`);
                 if (filters.priceMax !== undefined) numericFilters.push(`price <= ${filters.priceMax}`);
@@ -76,7 +77,7 @@ export const useMobileSearch = (initialFilters: FilterState = {}) => {
             }
         } catch (error) {
             logger.error('Search failed', error as Error);
-            
+
             // Fallback to Firestore on Algolia error
             try {
                 const data = await ListingService.search(filters);

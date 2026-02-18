@@ -140,7 +140,7 @@ export default function MyAdsScreen() {
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                     <AdCard theme={theme}>
-                        <CarCard listing={item} onPress={() => router.push(`/car/${item.id}`)} />
+                        <CarCard listing={item} onPress={() => router.push({ pathname: '/car/[id]', params: { id: item.id } })} />
                         <AdActions theme={theme}>
                             <ActionButton onPress={() => router.push({ pathname: '/profile/edit-listing/[id]' as any, params: { id: item.id } })}>
                                 <Ionicons name="create-outline" size={18} color={theme.colors.primary.main} />

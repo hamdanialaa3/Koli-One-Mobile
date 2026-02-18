@@ -9,8 +9,10 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { RealtimeMessage } from '../../services/MessagingService';
 import { useTranslation } from '../../locales/useTranslation';
+import { theme } from '../../styles/theme';
 
 interface OfferBubbleProps {
   message: RealtimeMessage;
@@ -23,11 +25,7 @@ const BubbleContainer = styled.View<{ isOwn: boolean }>`
   margin-bottom: 12px;
 `;
 
-const OfferCard = styled.View<{ isOwn: boolean }>`
-  background: linear-gradient(135deg, 
-    ${props => props.isOwn ? props.theme.colors.primary.main : props.theme.colors.accent.main} 0%,
-    ${props => props.isOwn ? props.theme.colors.primary.dark : props.theme.colors.accent.dark} 100%
-  );
+const OfferCard = styled(LinearGradient)`
   border-radius: 16px;
   padding: 16px;
   shadow-color: #000;
@@ -115,7 +113,14 @@ export const OfferBubble: React.FC<OfferBubbleProps> = ({ message, isOwnMessage 
 
   return (
     <BubbleContainer isOwn={isOwnMessage}>
-      <OfferCard isOwn={isOwnMessage}>
+      <OfferCard
+        colors={isOwnMessage 
+          ? [theme.colors.primary.main, theme.colors.primary.dark]
+          : [theme.colors.accent.main, theme.colors.accent.dark]
+        }
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
         <OfferHeader>
           <OfferIcon>
             <Ionicons name="pricetag" size={18} color="#ffffff" />

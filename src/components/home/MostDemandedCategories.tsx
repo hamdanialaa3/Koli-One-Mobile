@@ -16,7 +16,7 @@ import {
   Crown,
   ArrowUpRight
 } from 'lucide-react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { theme } from '../../styles/theme';
 import { Platform, ScrollView } from 'react-native';
 
@@ -215,11 +215,10 @@ const ListingsCount = styled.Text`
 `;
 
 export default function MostDemandedCategories() {
-  const navigation = useNavigation();
+  const router = useRouter();
 
   const handlePress = (slug: string) => {
-    // @ts-ignore
-    navigation.navigate('Search', { query: `category=${slug}` });
+    router.push({ pathname: '/(tabs)/search', params: { query: `category=${slug}` } });
   };
 
   return (

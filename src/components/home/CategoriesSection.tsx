@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/native';
+import { logger } from '../../services/logger-service';
 import { View, ScrollView, Dimensions, TouchableOpacity, Image, FlatList, Platform } from 'react-native';
 import { theme } from '../../styles/theme';
 import { useRouter } from 'expo-router';
@@ -196,7 +197,7 @@ export default function CategoriesSection() {
 
       setCars(filtered.length > 0 ? filtered : allCars.slice(0, 5));
     } catch (e) {
-      console.warn("Error loading category cars", e);
+      logger.warn('Error loading category cars', { error: e });
     } finally {
       setLoading(false);
     }
@@ -255,7 +256,7 @@ export default function CategoriesSection() {
             horizontal
             data={cars}
             renderItem={({ item }) => (
-              <View style={{ width: '280px' as any, marginLeft: 24 }}>
+              <View style={{ width: 280, marginLeft: 24 }}>
                 <CarCard listing={item} />
               </View>
             )}

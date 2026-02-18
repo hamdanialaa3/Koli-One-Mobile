@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/native';
 import { MobileHeader } from '../../src/components/common/MobileHeader';
 import { theme } from '../../src/styles/theme';
-import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
+import { View, ScrollView, TouchableOpacity, Text, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { db, auth } from '../../src/services/firebase';
+import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
 
 const Container = styled.SafeAreaView`
   flex: 1;
@@ -76,6 +78,44 @@ const HistoryItem = styled.View`
 `;
 
 export default function ConsultationsScreen() {
+  const [requests, setRequests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [booking, setBooking] = useState(false);
+
+  useEffect(() => {
+    if (!auth.currentUser) { setLoading(false); return; }
+    const q = query(
+      collection(db, 'consultation_requests'),
+      where('userId', '==', auth.currentUser.uid),
+      orderBy('createdAt', 'desc')
+    );
+    const unsub = onSnapshot(q, (snap) => {
+      setRequests(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setLoading(false);
+    }, () => setLoading(false));
+    return unsub;
+  }, []);
+
+  const handleBook = async () => {
+    if (!auth.currentUser) {
+      Alert.alert('Вход', 'Моля, влезте в профила си.');
+      return;
+    }
+    setBooking(true);
+    try {
+      await addDoc(collection(db, 'consultation_requests'), {
+        userId: auth.currentUser.uid,
+        type: 'general',
+        status: 'pending',
+        createdAt: serverTimestamp(),
+      });
+      Alert.alert('Успех', 'Заявката е изпратена! Ще се свържем с вас до 24 часа.');
+    } catch (error) {
+      Alert.alert('Грешка', 'Неуспешно изпращане. Опитайте отново.');
+    } finally {
+      setBooking(false);
+    }
+  };
   return (
     <Container theme={theme}>
       <MobileHeader title="Expert Support" back />
@@ -90,8 +130,8 @@ export default function ConsultationsScreen() {
             Our experts can help you with vehicle inspections, price negotiations,
             and documentation. Book a 1-on-1 session today.
           </Description>
-          <ActionButton theme={theme}>
-            <ActionButtonText>Book a Consultation</ActionButtonText>
+          <ActionButton theme={theme} onPress={handleBook} disabled={booking}>
+            <ActionButtonText>{booking ? 'Изпращане...' : 'Book a Consultation'}</ActionButtonText>
           </ActionButton>
         </ExpertCard>
 
@@ -99,16 +139,30 @@ export default function ConsultationsScreen() {
           <Text style={{ fontSize: 18, fontWeight: '800', color: theme.colors.text.primary }}>Past Requests</Text>
         </View>
 
-        <HistoryItem theme={theme}>
-          <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: theme.colors.background.default, justifyContent: 'center', alignItems: 'center' }}>
-            <Ionicons name="document-text-outline" size={20} color={theme.colors.text.disabled} />
-          </View>
-          <View style={{ flex: 1, marginLeft: 12 }}>
-            <Text style={{ fontWeight: '700', fontSize: 14 }}>Documentation Review</Text>
-            <Text style={{ fontSize: 12, color: theme.colors.text.secondary }}>Completed on Jan 15, 2026</Text>
-          </View>
-          <Ionicons name="checkmark-circle" size={20} color={theme.colors.status.success} />
-        </HistoryItem>
+        {loading ? (
+          <ActivityIndicator size="large" color={theme.colors.primary.main} />
+        ) : requests.length === 0 ? (
+          <Text style={{ textAlign: 'center', color: theme.colors.text.secondary }}>Няма предишни заявки</Text>
+        ) : (
+          requests.map((req) => (
+            <HistoryItem key={req.id} theme={theme}>
+              <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: theme.colors.background.default, justifyContent: 'center', alignItems: 'center' }}>
+                <Ionicons name="document-text-outline" size={20} color={theme.colors.text.disabled} />
+              </View>
+              <View style={{ flex: 1, marginLeft: 12 }}>
+                <Text style={{ fontWeight: '700', fontSize: 14 }}>{req.type || 'Consultation'}</Text>
+                <Text style={{ fontSize: 12, color: theme.colors.text.secondary }}>
+                  {req.status === 'completed' ? 'Завършена' : req.status === 'pending' ? 'Изчакване' : req.status}
+                </Text>
+              </View>
+              <Ionicons
+                name={req.status === 'completed' ? 'checkmark-circle' : 'time-outline'}
+                size={20}
+                color={req.status === 'completed' ? theme.colors.status.success : theme.colors.text.disabled}
+              />
+            </HistoryItem>
+          ))
+        )}
 
         <View style={{ height: 40 }} />
       </Content>

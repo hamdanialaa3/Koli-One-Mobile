@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/native';
+import { logger } from '../../services/logger-service';
 import { TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
@@ -108,7 +109,7 @@ export const CarDetailsReviews: React.FC<Props> = ({ car }) => {
       const data = await ReviewService.getSellerStats(car.sellerId);
       setStats(data);
     } catch (error) {
-      console.error('Failed to load review stats:', error);
+      logger.error('Failed to load review stats', error);
     }
   };
 

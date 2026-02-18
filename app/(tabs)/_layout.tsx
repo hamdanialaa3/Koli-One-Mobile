@@ -1,78 +1,62 @@
-import React from 'react';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import React, { useEffect, useState } from 'react';
 import { Tabs } from 'expo-router';
 import { theme } from '@/styles/theme';
-import { useColorScheme } from '@/components/useColorScheme';
 import MobileHeader from '../../src/components/navigation/MobileHeader';
-
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) {
-  return <FontAwesome size={24} style={{ marginBottom: -3 }} {...props} />;
-}
+import CustomTabBar from '../../src/components/navigation/CustomTabBar';
+import { useAuth } from '../../src/contexts/AuthContext';
+import { getDatabase, ref, onValue } from 'firebase/database';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  const activeColor = theme.colors.primary.main;
+  const { user } = useAuth();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Listen for unread messages count
+  useEffect(() => {
+    if (!user?.uid) {
+      setUnreadCount(0);
+      return;
+    }
+    const db = getDatabase();
+    const unreadRef = ref(db, `userMeta/${user.uid}/unreadCount`);
+    const unsub = onValue(unreadRef, (snapshot) => {
+      setUnreadCount(snapshot.val() || 0);
+    });
+    return () => unsub();
+  }, [user?.uid]);
 
   return (
     <Tabs
+      tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{
-        tabBarActiveTintColor: activeColor,
         header: () => <MobileHeader />,
-        tabBarStyle: {
-          backgroundColor: theme.colors.background.paper,
-          borderTopColor: theme.colors.border.muted,
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 8,
-        },
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '600',
-        }
-      }}>
+        tabBarActiveTintColor: theme.colors.primary.main,
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
+          headerShown: false,
           title: 'Home',
-          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
       />
       <Tabs.Screen
         name="search"
-        options={{
-          title: 'Search',
-          tabBarIcon: ({ color }) => <TabBarIcon name="search" color={color} />,
-        }}
+        options={{ title: 'Search' }}
       />
       <Tabs.Screen
         name="sell"
-        options={{
-          title: 'Sell',
-          tabBarIcon: ({ color }) => <TabBarIcon name="camera" color={color} />,
-        }}
+        options={{ title: 'Sell' }}
       />
-      <Tabs.Screen
-        name="map"
-        options={{
-          title: 'Map',
-          tabBarIcon: ({ color }) => <TabBarIcon name="map-marker" color={color} />,
-        }}
-      />
+
       <Tabs.Screen
         name="profile"
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
-        }}
+        options={{ title: 'Profile' }}
       />
       <Tabs.Screen
         name="messages"
         options={{
           title: 'Messages',
-          tabBarIcon: ({ color }) => <TabBarIcon name="comments" color={color} />,
+          tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
         }}
       />
     </Tabs>

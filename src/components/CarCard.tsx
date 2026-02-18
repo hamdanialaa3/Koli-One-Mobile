@@ -144,7 +144,10 @@ import { SocialPublishButton } from './social/SocialPublishButton';
 
 export const CarCard = React.memo(({ listing, onPress }: CarCardProps) => {
   const router = useRouter();
-  const displayImage = listing.images?.[0] || '';
+  const rawImage = listing.images?.[0] || '';
+  // Only use URI if it looks like a full URL, otherwise use placeholder
+  const isValidUrl = rawImage.startsWith('http://') || rawImage.startsWith('https://');
+  const displayImage = isValidUrl ? rawImage : '';
 
   const handleFavorite = (e: any) => {
     e.stopPropagation();

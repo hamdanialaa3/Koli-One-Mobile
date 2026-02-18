@@ -126,7 +126,7 @@ const BarTrack = styled.View`
   height: 8px;
   background-color: ${props => props.theme.colors.background.dark};
   border-radius: 4px;
-  margin: 0 12px;
+  margin: 0px 12px;
   overflow: hidden;
 `;
 

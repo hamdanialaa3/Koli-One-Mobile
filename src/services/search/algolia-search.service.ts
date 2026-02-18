@@ -36,22 +36,22 @@ class AlgoliaSearchService {
   private isInitialized = false;
 
   private constructor() {
-    // Get Algolia config from expo-constants
-    const extra = Constants.expoConfig?.extra;
-    const appId = extra?.algoliaAppId;
-    const searchApiKey = extra?.algoliaSearchApiKey;
-    this.indexName = extra?.algoliaIndexName || 'cars';
+    // Algolia Configuration - loaded from Expo config (set via .env → app.config.ts)
+    const extra = Constants.expoConfig?.extra ?? {};
+    const appId = extra.algoliaAppId || '';
+    const searchApiKey = extra.algoliaSearchApiKey || '';
+    this.indexName = extra.algoliaIndexName || 'cars';
 
-    if (appId && searchApiKey && appId !== 'REPLACE_WITH_ALGOLIA_APP_ID') {
+    if (appId && searchApiKey) {
       try {
         this.client = algoliasearch(appId, searchApiKey);
         this.isInitialized = true;
-        logger.info('✅ Algolia initialized', { indexName: this.indexName });
+        logger.info(`✅ Algolia initialized (AppID: ${appId.substring(0, 3)}...)`, { indexName: this.indexName });
       } catch (error) {
         logger.error('❌ Algolia initialization failed', error as Error);
       }
     } else {
-      logger.warn('⚠️ Algolia not configured (missing app.config.js vars)');
+      logger.warn('⚠️ Algolia not configured');
     }
   }
 
@@ -103,10 +103,16 @@ class AlgoliaSearchService {
         searchParams.numericFilters = params.numericFilters;
       }
 
-      const result = await this.client.searchSingleIndex({
-        indexName: this.indexName,
-        searchParams: { ...searchParams, query: params.query }
+      // Algolia v5 API - use search with requests array
+      const { results } = await this.client.search({
+        requests: [{
+          indexName: this.indexName,
+          query: params.query,
+          ...searchParams
+        }]
       });
+
+      const result = results[0];
 
       const cars = (result.hits || []).map((hit: any) => ({
         id: hit.objectID,

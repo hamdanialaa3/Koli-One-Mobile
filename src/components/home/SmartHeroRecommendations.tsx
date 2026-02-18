@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components/native';
+import { logger } from '../../services/logger-service';
 import { View, Text, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { Sparkles, RefreshCw, ChevronRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
@@ -92,7 +93,7 @@ const CardWrapper = styled.View`
 
 // Helper component for Brand Badge
 const BrandBadge = styled(LinearGradient).attrs({
-    colors: ['#FF8F10', '#FF6B00'],
+    colors: ['#8B3FCE', '#6A1B9A'],
     start: { x: 0, y: 0 },
     end: { x: 1, y: 1 }
 })`
@@ -127,7 +128,7 @@ export default function SmartHeroRecommendations() {
             // Simulate personalized check logic (stub for future enhancement)
             setIsPersonalized(false);
         } catch (error) {
-            console.error('Failed to load recommendations', error);
+            logger.error('Failed to load recommendations', error);
         } finally {
             setLoading(false);
             setRefreshing(false);
@@ -151,13 +152,13 @@ export default function SmartHeroRecommendations() {
             <Header>
                 <TitleContainer>
                     <TitleRow>
-                        <Sparkles color="#FF8F10" size={20} />
+                        <Sparkles color="#8B3FCE" size={20} />
                         <Title theme={theme}>
                             {isPersonalized ? 'Picked for you' : 'Popular cars'}
                         </Title>
                         {/* Optional Dominant Brand Badge - Parity with Web */}
                         {isPersonalized && (
-                            <BrandBadge colors={['#FF8F10', '#FF6B00']}>
+                            <BrandBadge colors={['#8B3FCE', '#6A1B9A']}>
                                 <BrandText>BMW</BrandText>
                             </BrandBadge>
                         )}

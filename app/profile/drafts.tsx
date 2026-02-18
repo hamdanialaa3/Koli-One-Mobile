@@ -123,7 +123,7 @@ export default function DraftsScreen() {
                         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.primary.main} />
                     }
                     renderItem={({ item }) => (
-                        <DraftCard theme={theme} onPress={() => router.push(`/sell?draftId=${item.id}` as any)}>
+                        <DraftCard theme={theme} onPress={() => router.push(`/(tabs)/sell?draftId=${item.id}` as any)}>
                             <View style={{ width: 44, height: 44, borderRadius: 10, backgroundColor: theme.colors.background.default, justifyContent: 'center', alignItems: 'center' }}>
                                 <Ionicons name="document-text-outline" size={24} color={theme.colors.primary.main} />
                             </View>
@@ -141,7 +141,7 @@ export default function DraftsScreen() {
                                 <EmptyTitle theme={theme}>No drafts found</EmptyTitle>
                                 <EmptySubtitle theme={theme}>Your saved car listings will appear here so you can finish them later.</EmptySubtitle>
                                 <TouchableOpacity
-                                    onPress={() => router.push('/sell')}
+                                    onPress={() => router.push('/(tabs)/sell')}
                                     style={{ marginTop: 24, padding: 12, backgroundColor: theme.colors.primary.main, borderRadius: 12 }}
                                 >
                                     <Text style={{ color: 'white', fontWeight: '700' }}>Start New Listing</Text>

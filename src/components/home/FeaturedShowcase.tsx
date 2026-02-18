@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/native';
+import { logger } from '../../services/logger-service';
 import { ScrollView, View, TouchableOpacity, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -120,7 +121,7 @@ export default function FeaturedShowcase() {
       // In real app, we might use ListingService.getFeatured()
       setListings(data);
     } catch (error) {
-      console.error(error);
+      logger.error('Failed to load featured listings', error);
     } finally {
       setLoading(false);
     }
@@ -190,7 +191,7 @@ export default function FeaturedShowcase() {
         {loading ? (
           <ScrollContent horizontal showsHorizontalScrollIndicator={false}>
             {[1, 2, 3].map(i => (
-              <View key={i} style={{ marginRight: 16, width: '280px' as any }}>
+              <View key={i} style={{ width: 280, marginRight: 16 }}>
                 <SkeletonListingCard />
               </View>
             ))}
@@ -198,7 +199,7 @@ export default function FeaturedShowcase() {
         ) : (
           <ScrollContent horizontal showsHorizontalScrollIndicator={false}>
             {filteredListings.map((car) => (
-              <View key={car.id} style={{ marginRight: 16, width: '280px' as any }}>
+              <View key={car.id} style={{ width: 280, marginRight: 16 }}>
                 <CarCard listing={car} />
               </View>
             ))}

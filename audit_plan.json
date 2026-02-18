@@ -1,0 +1,109 @@
+{
+  "project": "Koli One Mobile (mobile_new/)",
+  "auditVersion": "2.0",
+  "branch": "feat/mobile/full-parity-v2",
+  "totalScreens": 59,
+  "phases": [
+    {
+      "id": 1,
+      "name": "Service-Layer Mock Removal",
+      "status": "completed",
+      "files": [
+        { "path": "src/services/ai.service.ts", "action": "add getPriceSuggestion + checkQuota calling Cloud Functions", "status": "done" },
+        { "path": "app/ai/valuation.tsx", "action": "replace setTimeout+Math.random with aiService.getPriceSuggestion()", "status": "done" },
+        { "path": "app/ai/history.tsx", "action": "replace setTimeout with vinCheckService.checkVin(vin)", "status": "done" },
+        { "path": "src/services/SellService.ts", "action": "replace uploadBytes with uploadBytesResumable + retry + AbortController", "status": "done" },
+        { "path": "app/(auth)/register.tsx", "action": "add 8 form state vars + Firestore dealer_applications write", "status": "done" },
+        { "path": "app/report.tsx", "action": "replace setTimeout with addDoc(reports)", "status": "done" },
+        { "path": "app/social/create-post.tsx", "action": "add Storage upload + Firestore social_posts write", "status": "done" },
+        { "path": "app/profile/subscription.tsx", "action": "replace Haptics-only with Alert contact CTA", "status": "done" },
+        { "path": "app/(tabs)/profile.tsx", "action": "trustScore: 10 → 0", "status": "done" },
+        { "path": "app/(tabs)/settings.tsx", "action": "add real AsyncStorage.clear + Image cache clear", "status": "done" }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Screen Integration Fixes",
+      "status": "completed",
+      "files": [
+        { "path": "app/profile/campaigns.tsx", "action": "replace mockCampaigns with Firestore onSnapshot + delete", "status": "done" },
+        { "path": "app/profile/consultations.tsx", "action": "add Firestore booking + real-time list", "status": "done" },
+        { "path": "app/profile/analytics.tsx", "action": "replace hardcoded stats with Firestore aggregation", "status": "done" },
+        { "path": "app/car/[id]/history.tsx", "action": "replace HISTORY const with VinCheckService.checkVin()", "status": "done" },
+        { "path": "app/marketplace/checkout.tsx", "action": "replace handleOrder with contact-seller CTA", "status": "done" }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Navigation & UX Gaps",
+      "status": "completed",
+      "files": [
+        { "path": "app/stories.tsx", "action": "add useEffect import (TS fix), FAB → /stories/create", "status": "done" },
+        { "path": "app/all-cars.tsx", "action": "wire sortIdx to filters.sort + SORT_KEYS mapping + FlatList perf", "status": "done" },
+        { "path": "app/profile/[id].tsx", "action": "real Firestore follow/unfollow + Arabic→Bulgarian labels", "status": "done" },
+        { "path": "app/(auth)/phone-login.tsx", "action": "new file — Firebase Phone Auth + OTP verification", "status": "done" },
+        { "path": "app/stories/create.tsx", "action": "new file — story creation with image upload + Firestore write", "status": "done" },
+        { "path": "app/stories/_layout.tsx", "action": "new file — Expo Router layout for stories group", "status": "done" }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Messaging Enhancements",
+      "status": "completed",
+      "files": [
+        { "path": "src/services/MessagingService.ts", "action": "add setTyping, subscribeToTyping, markAsRead, respondToOffer", "status": "done" }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Performance Optimizations",
+      "status": "completed",
+      "files": [
+        { "path": "src/hooks/useNetworkStatus.ts", "action": "new file — connectivity hook with NetInfo fallback", "status": "done" },
+        { "path": "app/all-cars.tsx", "action": "add getItemLayout + removeClippedSubviews + windowing", "status": "done" }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Security & CI",
+      "status": "completed",
+      "files": [
+        { "path": "firestore.rules", "action": "add rules for reports, dealer_applications, campaigns, consultation_requests, social_posts, stories, user following", "status": "done" },
+        { "path": ".github/workflows/mobile-ci.yml", "action": "new file — lint + typecheck + test + EAS dry-run", "status": "done" },
+        { "path": "mobile_new/TESTING.md", "action": "new file — test guide", "status": "done" },
+        { "path": "src/services/__tests__/MessagingService.test.ts", "action": "new file — 8 unit tests for MessagingService", "status": "done" }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Audit & Feature Flags",
+      "status": "completed",
+      "files": [
+        { "path": "audit_plan.json", "action": "this file", "status": "done" },
+        { "path": "audit_summary.md", "action": "human-readable audit summary", "status": "done" },
+        { "path": "src/services/featureFlags.ts", "action": "new file — runtime feature flag system", "status": "done" }
+      ]
+    }
+  ],
+  "newCollections": [
+    "reports",
+    "dealer_applications",
+    "campaigns",
+    "consultation_requests",
+    "social_posts",
+    "stories",
+    "users/{uid}/following/{targetId}"
+  ],
+  "newScreens": [
+    "app/(auth)/phone-login.tsx",
+    "app/stories/create.tsx",
+    "app/stories/_layout.tsx"
+  ],
+  "missingPackages": [
+    "expo-firebase-recaptcha",
+    "@react-native-community/netinfo"
+  ],
+  "preExistingIssues": [
+    "stories.tsx useEffect missing import — FIXED in Phase 3"
+  ]
+}
